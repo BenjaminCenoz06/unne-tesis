@@ -252,18 +252,5 @@
   .js .hero__title .line > span { transform: none; }
 }
 
-/* ---------- Video de fondo (4K / HD, se elige según la pantalla) ---------- */
-.hero__bg video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.6s ease;
-  pointer-events: none;
-}
-.hero__bg video.is-playing { opacity: 1; }
 .hero__text { text-shadow: 0 2px 24px rgba(3, 39, 26, .55); }
 .hero__text .btn { text-shadow: none; }
-@media (max-width: 960px) {
-  .hero__bg video { object-position: 50% 40%; }
-}
