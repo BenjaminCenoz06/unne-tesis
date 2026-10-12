@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <script>document.documentElement.classList.add('js');try{if('scrollRestoration' in history)history.scrollRestoration='manual';if(location.hash)history.replaceState(null,'',location.pathname+location.search);}catch(e){}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BiblioHub</title>
+  <link rel="icon" href="images/logo-icon.png" type="image/png">
+  <meta name="theme-color" content="#00482a">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/carousel.css">
+  <link rel="stylesheet" href="css/spotlight.css">
+  <link rel="stylesheet" href="css/branch.css">
+  <link rel="stylesheet" href="css/collage.css">
+  <link rel="stylesheet" href="css/reasons.css">
+  <link rel="stylesheet" href="css/voices.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <div class="preloader" id="preloader" aria-hidden="true"><img src="images/logo-white.png" alt=""></div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+
+  <!-- SVG sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.5"/><path d="M3 22c0-5 4-8 9-8s9 3 9 8z"/></symbol>
+    <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M4 2l16 11-7 1.5 4 7.5-3 1.5-4-7.5L4 19z"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2 4h20v16H2zm6 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM3.5 18h9c0-2.2-2-3.5-4.5-3.5S3.5 15.8 3.5 18zM14 9h6v1.6h-6zm0 3h6v1.6h-6z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.5 3.2 3.5 14.8 0 18M12 3c-3.5 3.2-3.5 14.8 0 18"/></g></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 4.5c3.3-1 6.7-.6 10 1.5 3.3-2.1 6.7-2.5 10-1.5v14.5c-3.300-1-6.700-.6-10 1.500-3.300-2.100-6.700-2.500-10-1.500z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.500" cy="10.500" r="6.500"/><path d="M15.500 15.500L21 21"/></g></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 2h8l3 3v4H7zM3 10h18v8h-4v4H7v-4H3zm6 6v4h6v-4z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 15h2v2h-2zm1-11a3.500 3.500 0 0 0-3.500 3.500h2a1.500 1.500 0 1 1 2.200 1.300c-1.200.7-1.700 1.400-1.700 2.700h2c0-.7.300-1 1-1.400A3.300 3.300 0 0 0 12 6z"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M9 3a3 3 0 0 1 6 0v2h4l1 17H4L5 5h4zm2 0a1 1 0 0 1 2 0v2h-2zM9 10v1.500a3 3 0 0 0 6 0V10h-2v1.500a1 1 0 0 1-2 0V10z"/></symbol>
+    <symbol id="i-openbook" viewBox="0 0 24 24"><path d="M2 5l10 2 10-2v13l-10 2L2 18zm10 3.500v10.500l8-1.600V7.100zM4 7.100v10.300l6 1.200V8.300z"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M3 3h18v18H3zm4 4v2h10V7zm0 4v2h10v-2zm0 4v2h6v-2z"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M4 4h16v11H4zM2 17h20v2a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 64 64"><path d="M4 8a4 4 0 0 1 4-4h20v24H4zM36 4h20a4 4 0 0 1 4 4v20H36zM4 36h24v24H8a4 4 0 0 1-4-4zM36 36h24v20a4 4 0 0 1-4 4H36z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 64 64"><path fill-rule="evenodd" d="M24 2h16v8h8v8h8v10h8v8h-8v10h-8v8h-8v8H24v-8h-8v-8H8v-10H0v-8h8V18h8v-8h8zm8 18a12 12 0 1 0 0 24 12 12 0 0 0 0-24z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 64 64"><path d="M4 4h18l10 12L42 4h18v18L48 32l12 10v18H42L32 48 22 60H4V42l12-10L4 22z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 1a8 8 0 0 0-8 8c0 5.500 8 14 8 14s8-8.500 8-14a8 8 0 0 0-8-8zm0 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></symbol>
+    <symbol id="i-dollar" viewBox="0 0 24 24"><text x="12" y="19" text-anchor="middle" font-size="21" font-weight="700" font-family="Inter, Arial, sans-serif">$</text></symbol>
+    <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4.500" r="2.200"/><path d="M4 8.500l8 1.500 8-1.500v2.200l-5.500 1.300v3l1.800 6.500h-2.300L12 15.500 9 21.500H6.700L8.500 15v-3L3 10.700z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M9.500 16.200L5.300 12 3.900 13.400l5.600 5.600L21 7.500 19.600 6.100z"/></symbol>
+    <symbol id="i-caret" viewBox="0 0 10 6"><path d="M0 0h10L5 6z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 11h13.200l-5-5L13.600 4.600 21 12l-7.400 7.400-1.400-1.400 5-5H4z"/></symbol>
+  </svg>
+
+  <header class="site-header" id="site-header">
+    <div class="container">
+
+      <!-- Barra superior -->
+      <div class="topbar">
+        <ul class="topbar__left">
+          <li>
+            <button class="chip" data-modal="account" type="button">
+              <svg class="icon"><use href="#i-user"/></svg>
+              <span class="js-account-label">Mi cuenta</span>
+            </button>
+          </li>
+          <li class="dropdown">
+            <button class="chip" type="button" aria-expanded="false" aria-haspopup="true">
+              <svg class="icon"><use href="#i-cursor"/></svg>
+              Enlaces rápidos
+              <svg class="caret"><use href="#i-caret"/></svg>
+            </button>
+            <ul class="dropdown__menu">
+              <li><a href="#contacto" data-modal="help">Obtener ayuda</a></li>
+              <li><a href="#contacto" data-modal="contact">Contáctenos</a></li>
+              <li><a href="#sedes" data-go="#sedes">Sedes y horarios</a></li>
+              <li><a href="#contacto" data-modal="print">Impresión</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <button class="chip" type="button" aria-expanded="false" aria-haspopup="true">
+              <svg class="icon"><use href="#i-card"/></svg>
+              Carné de biblioteca
+              <svg class="caret"><use href="#i-caret"/></svg>
+            </button>
+            <ul class="dropdown__menu">
+              <li><a href="#contacto" data-modal="card">Obtener un carné</a></li>
+              <li><a href="#contacto" data-modal="account">Acceder a su cuenta</a></li>
+              <li><a href="#contacto" data-modal="policies">Políticas de préstamo</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <button class="chip" type="button" aria-expanded="false" aria-haspopup="true">
+              <svg class="icon"><use href="#i-access"/></svg>
+              Accesibilidad
+              <svg class="caret"><use href="#i-caret"/></svg>
+            </button>
+            <ul class="dropdown__menu dropdown__menu--a11y">
+              <li><button type="button" data-a11y="contrast" aria-pressed="false"><span class="sw"></span>Alto contraste</button></li>
+              <li><button type="button" data-a11y="font" aria-pressed="false"><span class="sw"></span>Tipografía legible</button></li>
+              <li><button type="button" data-a11y="links" aria-pressed="false"><span class="sw"></span>Subrayar enlaces</button></li>
+              <li><button type="button" data-a11y="motion" aria-pressed="false"><span class="sw"></span>Reducir animaciones</button></li>
+              <li><button type="button" data-a11y="reset" class="is-reset">Restablecer</button></li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="topbar__right">
+          <button class="chip chip--yellow" type="button" data-search="catalog" aria-expanded="false">
+            <svg class="icon"><use href="#i-book"/></svg>
+            Buscar en el catálogo
+            <svg class="icon icon--lg"><use href="#i-search"/></svg>
+          </button>
+          <button class="chip chip--yellow" type="button" data-search="website" aria-expanded="false">
+            <svg class="icon"><use href="#i-cursor"/></svg>
+            Buscar en el sitio
+            <svg class="icon icon--lg"><use href="#i-search"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel de búsqueda de la barra superior -->
+      <form class="topsearch" id="topsearch" role="search" hidden>
+        <label class="sr-only" for="topsearch-input">Palabras clave</label>
+        <input id="topsearch-input" type="search" placeholder="Ingrese palabras clave…">
+        <button type="submit" class="btn btn--dark"><span id="topsearch-label">Buscar en el catálogo</span></button>
+      </form>
+
+      <!-- Logo + navegación principal -->
+      <div class="mainbar">
+        <a class="logo" href="index.html" aria-label="BiblioHub — Inicio">
+          <img class="logo__white" src="images/logo-white.png" alt="BiblioHub" width="480" height="300">
+          <img class="logo__color" src="images/logo.png" alt="" aria-hidden="true" width="480" height="300">
+        </a>
+
+        <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="mainnav" id="mainnav" aria-label="Principal">
+          <ul id="mainnav-list"><!-- generado por js/header.js --></ul>
+          <button class="nav-search" data-search="catalog" data-label="Buscar en el catálogo" aria-label="Buscar" aria-expanded="false">
+            <svg><use href="#i-search"/></svg>
+          </button>
+        </nav>
+      </div>
+
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- Inicio -->
+    <section class="welcome" id="inicio">
+      <div class="hero">
+        <div class="hero__bg" id="hero-bg" aria-hidden="true"></div>
+        <div class="hero__shade" aria-hidden="true"></div>
+
+        <div class="hero__text" id="hero-text">
+          <p class="hero__eyebrow"><span>Bienvenidos a</span></p>
+          <h1 class="hero__title">
+            <span class="line"><span>Tu biblioteca,</span></span>
+            <span class="line"><span>siempre <em>a mano</em></span></span>
+          </h1>
+          <p class="hero__lead">Libros, archivos digitales, eventos y espacios para leer, aprender y crear. Todo en un solo lugar.</p>
+          <div class="hero__cta">
+            <a class="btn btn--gold" href="#catalogo" data-go="#catalogo">Explorar libros <svg class="icon"><use href="#i-arrow"/></svg></a>
+            <button class="btn btn--ghost" type="button" data-modal="card">Obtener mi carné</button>
+          </div>
+        </div>
+
+        <a class="hero__scroll" href="#catalogo" data-go="#catalogo" aria-label="Seguir bajando"><span></span></a>
+      </div>
+
+      <div class="container container--narrow">
+        <div class="finder">
+          <form class="finder__search" role="search" id="finder-form">
+            <h2 class="finder__title"><label for="finder-input">¿Qué podemos ayudarle a encontrar?</label></h2>
+            <div class="finder__field">
+              <svg class="finder__icon"><use href="#i-search"/></svg>
+              <input id="finder-input" type="search" placeholder="Escriba un título, autor o tema…" autocomplete="off">
+            </div>
+            <div class="finder__buttons">
+              <button type="submit" class="btn btn--dark" data-target="catalog">
+                <svg class="icon icon--yellow"><use href="#i-book"/></svg>
+                Buscar en el catálogo
+              </button>
+              <button type="submit" class="btn btn--dark" data-target="website">
+                <svg class="icon icon--yellow"><use href="#i-cursor"/></svg>
+                Buscar en el sitio
+              </button>
+            </div>
+          </form>
+
+          <ul class="finder__links">
+            <li><a href="#contacto" data-modal="account"><svg class="icon"><use href="#i-user"/></svg><span>Mi cuenta</span></a></li>
+            <li><a href="#contacto" data-modal="card"><svg class="icon"><use href="#i-card"/></svg><span>Obtener un carné</span></a></li>
+            <li><a href="#contacto" data-modal="print"><svg class="icon"><use href="#i-print"/></svg><span>Imprimir</span></a></li>
+            <li><a href="#contacto" data-modal="help"><svg class="icon"><use href="#i-help"/></svg><span>Obtener ayuda</span></a></li>
+            <li><a href="#sedes" data-go="#sedes"><svg class="icon"><use href="#i-pin"/></svg><span>Sedes y horarios</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leer y pedir prestado -->
+    <section class="borrow" id="catalogo" aria-labelledby="borrow-title">
+      <div class="container container--narrow">
+        <h2 class="section-title" id="borrow-title">Leer, ver y pedir prestado</h2>
+        <h3 class="eyebrow">Qué pedir prestado</h3>
+
+        <ul class="cards">
+          <li>
+            <a class="card card--aqua" href="#ficcion" data-go="#ficcion">
+              <span class="card__tab"><svg><use href="#i-openbook"/></svg></span>
+              <span class="card__title">Libros</span>
+              <span class="card__go"><svg><use href="#i-arrow"/></svg></span>
+            </a>
+          </li>
+          <li>
+            <a class="card card--lime" href="#investigacion" data-go="#investigacion">
+              <span class="card__tab"><svg><use href="#i-doc"/></svg></span>
+              <span class="card__title">Biblioteca digital</span>
+              <span class="card__go"><svg><use href="#i-arrow"/></svg></span>
+            </a>
+          </li>
+          <li>
+            <a class="card card--blue" href="#contacto" data-modal="computers">
+              <span class="card__tab"><svg><use href="#i-laptop"/></svg></span>
+              <span class="card__title">Computadoras y tecnología</span>
+              <span class="card__go"><svg><use href="#i-arrow"/></svg></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Cinta de anuncios -->
+    <div class="ticker" aria-label="Información de préstamo">
+      <div class="ticker__track" id="ticker-track"></div>
+    </div>
+
+    <!-- Carruseles por categoría (generados por js/carousel.js) -->
+    <div id="shelves"></div>
+
+    <!-- Eventos: fechas importantes de la literatura -->
+    <section class="spotlight" id="eventos" aria-labelledby="spot-title">
+      <div class="container container--narrow">
+        <h2 class="section-title" id="spot-title">Fechas para celebrar la literatura</h2>
+
+        <article class="feature feature--a">
+          <div class="feature__art art--dots" style="--c1:#f0dfae;--c2:#26a047;--c3:#00482a">
+            <span class="date"><b>21</b><i>febrero</i></span>
+          </div>
+          <div class="feature__body grad--pink">
+            <svg class="feature__icon icon--plus"><use href="#i-plus"/></svg>
+            <h3><a href="#eventos" data-event="0">Día Internacional de la Lengua Materna <svg><use href="#i-arrow"/></svg></a></h3>
+            <p>Proclamado por la UNESCO para promover la diversidad lingüística y el multilingüismo. Cada lengua guarda una forma única de contar el mundo y una literatura por descubrir.</p>
+          </div>
+        </article>
+
+        <article class="feature feature--b">
+          <div class="feature__art art--rays" style="--c1:#0a6b34;--c2:#168a3e;--c3:#f0dfae">
+            <span class="date"><b>21</b><i>marzo</i></span>
+          </div>
+          <div class="feature__body grad--blue">
+            <svg class="feature__icon icon--sun"><use href="#i-sun"/></svg>
+            <h3><a href="#eventos" data-event="1">Día Mundial de la Poesía <svg><use href="#i-arrow"/></svg></a></h3>
+            <p>Desde 1999, la UNESCO dedica este día a la palabra poética, a las lecturas en voz alta y a quienes mantienen viva la poesía en cada idioma del planeta.</p>
+          </div>
+        </article>
+
+        <article class="feature feature--a">
+          <div class="feature__art art--rings" style="--c1:#00482a;--c2:#d9ab4a;--c3:#fff">
+            <span class="date"><b>2</b><i>abril</i></span>
+          </div>
+          <div class="feature__body grad--aqua">
+            <svg class="feature__icon icon--x"><use href="#i-x"/></svg>
+            <h3><a href="#eventos" data-event="2">Día Internacional del Libro Infantil <svg><use href="#i-arrow"/></svg></a></h3>
+            <p>Se celebra desde 1967 en el natalicio de Hans Christian Andersen. Un día para despertar en los más chicos el amor por la lectura y reconocer a quienes escriben e ilustran para ellos.</p>
+          </div>
+        </article>
+
+        <article class="feature feature--b">
+          <div class="feature__art art--zig" style="--c1:#e1f2e6;--c2:#8fd0a2;--c3:#d9ab4a">
+            <span class="date"><b>23</b><i>abril</i></span>
+          </div>
+          <div class="feature__body grad--sun">
+            <svg class="feature__icon icon--plus"><use href="#i-plus"/></svg>
+            <h3><a href="#eventos" data-event="3">Día Mundial del Libro y del Derecho de Autor <svg><use href="#i-arrow"/></svg></a></h3>
+            <p>La fecha elegida por la UNESCO recuerda a Cervantes, Shakespeare y el Inca Garcilaso de la Vega, fallecidos en 1616. Es la gran fiesta del libro y de quienes lo escriben.</p>
+          </div>
+        </article>
+
+        <article class="feature feature--a">
+          <div class="feature__art art--stripes" style="--c1:#26a047;--c2:#03271a;--c3:#f0dfae">
+            <span class="date"><b>8</b><i>septiembre</i></span>
+          </div>
+          <div class="feature__body grad--lilac">
+            <svg class="feature__icon icon--sun"><use href="#i-sun"/></svg>
+            <h3><a href="#eventos" data-event="4">Día Internacional de la Alfabetización <svg><use href="#i-arrow"/></svg></a></h3>
+            <p>Proclamado por la UNESCO para recordar que leer y escribir son derechos humanos. Una jornada para impulsar el acceso a la educación y a los libros en todo el mundo.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Sedes -->
+    <section class="branch" id="sedes" aria-labelledby="branch-title">
+      <form class="branch__finder" id="branch-form" role="search">
+        <h2 class="branch__title" id="branch-title">Encuentra tu sucursal</h2>
+        <div class="branch__field">
+          <label class="sr-only" for="branch-zip">Código postal</label>
+          <input id="branch-zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="8" placeholder="Ingrese su código postal">
+          <button type="submit" class="btn btn--dark btn--sm">
+            Encuentra mi sucursal
+            <svg class="icon icon--yellow"><use href="#i-pin"/></svg>
+          </button>
+        </div>
+        <button class="branch__all" type="button" data-modal="branches">Ver todas las sedes y horarios</button>
+      </form>
+
+      <div class="branch__photo" role="img" aria-label="Fachada iluminada de una biblioteca histórica de noche"></div>
+      <p class="branch__caption">Sede Central, vista nocturna</p>
+    </section>
+
+    <!-- Servicios: motivos para leer e ir a la biblioteca -->
+    <section class="pride" id="servicios" aria-labelledby="pride-title">
+      <div class="pride__photos">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Iida_City_Kanae_Library_childrens_books_ac_(4).jpg?width=960" alt="Sección infantil de una biblioteca con libros ilustrados" loading="lazy">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/A_person_reading_a_braille_book.jpg?width=960" alt="Persona leyendo un libro en braille" loading="lazy">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Person_Reading_Marathi_Wikipedia_Brouchre_At_Book_Exhibition.jpg?width=960" alt="Persona leyendo en una feria del libro" loading="lazy">
+      </div>
+
+      <div class="pride__panel">
+        <h2 class="section-title pride__title" id="pride-title">Motivos para leer e ir a la biblioteca</h2>
+
+        <ul class="reasons">
+          <li class="reason reason--green">
+            <span class="card__tab"><svg><use href="#i-openbook"/></svg></span>
+            <p>Leer unos minutos al día amplía tu vocabulario, mejora la concentración y reduce el estrés.</p>
+            <button class="reason__btn" type="button" data-modal="habits">Hábitos de lectura <svg><use href="#i-arrow"/></svg></button>
+          </li>
+          <li class="reason reason--orange">
+            <span class="card__tab"><svg><use href="#i-user"/></svg></span>
+            <p>Pedir prestado es gratis: descubre nuevas historias sin gastar y comparte libros con tu comunidad.</p>
+            <button class="reason__btn" type="button" data-modal="card">Obtener mi carné <svg><use href="#i-arrow"/></svg></button>
+          </li>
+          <li class="reason reason--aqua">
+            <span class="card__tab"><svg><use href="#i-dollar"/></svg></span>
+            <p>Encuentra un lugar tranquilo para estudiar, trabajar o simplemente desconectarte del ruido.</p>
+            <button class="reason__btn" type="button" data-modal="rooms">Reservar una sala <svg><use href="#i-arrow"/></svg></button>
+          </li>
+          <li class="reason reason--blue">
+            <span class="card__tab"><svg><use href="#i-pin"/></svg></span>
+            <p>Participa en clubes de lectura, talleres y charlas con autores para todas las edades.</p>
+            <a class="reason__btn" href="#eventos" data-go="#eventos">Ver eventos <svg><use href="#i-arrow"/></svg></a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Investigación -->
+    <section class="research" id="investigacion" aria-labelledby="research-title">
+      <div class="research__glow" aria-hidden="true"></div>
+      <div class="container container--narrow">
+        <p class="eyebrow eyebrow--light">Investigación</p>
+        <h2 class="section-title section-title--light" id="research-title">Archivos, colecciones y<br>conocimiento abierto</h2>
+        <p class="research__lead">Accede a colecciones especiales, fotografías históricas y guías hechas por nuestros bibliotecarios, desde donde estés.</p>
+
+        <ul class="research__grid">
+          <li>
+            <article class="rcard">
+              <span class="rcard__icon"><svg><use href="#i-doc"/></svg></span>
+              <h3>Colecciones especiales</h3>
+              <p>Ediciones antiguas, manuscritos y publicaciones únicas que solo encontrarás aquí.</p>
+              <button class="rcard__btn" type="button" data-open-search="catalog" data-cat="Historia y sociedad">Explorar colección <svg><use href="#i-arrow"/></svg></button>
+            </article>
+          </li>
+          <li>
+            <article class="rcard">
+              <span class="rcard__icon"><svg><use href="#i-openbook"/></svg></span>
+              <h3>Biblioteca digital</h3>
+              <p>Libros electrónicos, audiolibros, revistas y cursos disponibles las 24 horas.</p>
+              <button class="rcard__btn" type="button" data-modal="digital">Ver recursos <svg><use href="#i-arrow"/></svg></button>
+            </article>
+          </li>
+          <li>
+            <article class="rcard">
+              <span class="rcard__icon"><svg><use href="#i-help"/></svg></span>
+              <h3>Guías de investigación</h3>
+              <p>Rutas de búsqueda para tesis, trámites, propiedad intelectual, mapas y más.</p>
+              <button class="rcard__btn" type="button" data-modal="guides">Ver guías <svg><use href="#i-arrow"/></svg></button>
+            </article>
+          </li>
+          <li>
+            <article class="rcard">
+              <span class="rcard__icon"><svg><use href="#i-pin"/></svg></span>
+              <h3>Genealogía y archivos</h3>
+              <p>Documentos, registros y fotos para reconstruir la historia de tu familia y tu barrio.</p>
+              <button class="rcard__btn" type="button" data-modal="genealogy">Empezar a investigar <svg><use href="#i-arrow"/></svg></button>
+            </article>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Comunidad: collage de fotos y videos -->
+    <section class="social" id="comunidad" aria-labelledby="social-title">
+      <div class="collage" id="collage">
+        <a class="collage__logo" href="#contacto" data-go="#contacto" aria-label="Redes sociales de BiblioHub">
+          <img src="images/logo-icon.png" alt="">
+        </a>
+
+        <div class="collage__center">
+          <img class="collage__mark" src="images/logo.png" alt="" aria-hidden="true" width="480" height="300">
+          <h2 class="collage__handle" id="social-title">
+            <a href="#contacto" data-go="#contacto">
+              <svg class="collage__book" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5c3.300-1 6.700-.6 10 1.500 3.300-2.100 6.700-2.500 10-1.500v14c-3.300-1-6.700-.6-10 1.500-3.300-2.100-6.700-2.500-10-1.500z"/></svg>
+              Síguenos @bibliohub
+            </a>
+          </h2>
+        </div>
+
+        <div class="collage__badge" aria-hidden="true">
+          <svg viewBox="0 0 120 120" class="collage__badge-ring">
+            <defs><path id="ring" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs>
+            <text><textPath href="#ring">Súmate a la lectura · Súmate a la lectura ·</textPath></text>
+          </svg>
+          <img class="collage__badge-mark" src="images/logo-icon-white.png" alt="">
+        </div>
+      </div>
+
+      <details class="credits">
+        <summary>Créditos de fotos y videos</summary>
+        <ul id="credits-list">
+          <li><a href="https://commons.wikimedia.org/wiki/File:Long_Room_Interior,_Trinity_College_Dublin,_Ireland_-_Diliff.jpg" target="_blank" rel="noopener">Foto principal: Long Room, Trinity College Dublin</a> — Diliff, CC BY-SA 4.0</li>
+          <li><a href="https://commons.wikimedia.org/wiki/File:Exterior_view._Illuminated_west_fa%C3%A7ade_view_at_night._Library_of_Congress_Thomas_Jefferson_Building,_Washington,_D.C._LCCN2007684251.tif" target="_blank" rel="noopener">Fachada de la sede (sección Encuentra tu sucursal)</a> — Carol M. Highsmith, dominio público</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- Opiniones -->
+    <section class="voices" id="opiniones" aria-labelledby="voices-title">
+      <h2 class="section-title voices__title" id="voices-title">Lo que cambia cuando<br>la biblioteca trabaja para vos</h2>
+      <div class="voices__avatars" aria-hidden="true">
+        <span style="--g:linear-gradient(135deg,#f0dfae,#d9ab4a)">E</span>
+        <span style="--g:linear-gradient(135deg,#8fd0a2,#26a047)">F</span>
+        <span style="--g:linear-gradient(135deg,#26a047,#00482a)">D</span>
+        <span style="--g:linear-gradient(135deg,#d9ab4a,#0a6b34)">L</span>
+        <span style="--g:linear-gradient(135deg,#0a6b34,#03271a)">N</span>
+      </div>
+      <div class="voices__wall" id="voices-wall"></div>
+    </section>
+
+    <!-- Acerca de -->
+    <section class="about" id="nosotros" aria-labelledby="about-title">
+      <div class="container container--narrow about__grid">
+        <div class="about__text">
+          <p class="eyebrow">Acerca de BiblioHub</p>
+          <h2 class="section-title" id="about-title">Una biblioteca abierta,<br>hecha para la comunidad</h2>
+          <p class="about__lead">Nuestra misión es que todas las personas tengan acceso gratuito al conocimiento, a la cultura y a un espacio donde crecer. Trabajamos con bibliotecarios, voluntarios y vecinos para que cada visita sea una oportunidad.</p>
+
+          <ul class="about__values">
+            <li><span><svg><use href="#i-check"/></svg></span><div><b>Acceso para todos</b><p>Servicios gratuitos, espacios accesibles y atención en tu idioma.</p></div></li>
+            <li><span><svg><use href="#i-check"/></svg></span><div><b>Conocimiento abierto</b><p>Colecciones físicas y digitales disponibles las 24 horas.</p></div></li>
+            <li><span><svg><use href="#i-check"/></svg></span><div><b>Comunidad primero</b><p>Eventos, talleres y programas pensados junto a los vecinos.</p></div></li>
+          </ul>
+
+          <div class="about__cta">
+            <button class="btn btn--dark" type="button" data-modal="contact">Contáctanos <svg class="icon"><use href="#i-arrow"/></svg></button>
+            <button class="btn btn--outline" type="button" data-modal="volunteer">Sé voluntario</button>
+            <button class="btn btn--outline" type="button" data-modal="careers">Empleos</button>
+          </div>
+        </div>
+
+        <ul class="about__stats">
+          <li><b data-count="3">0</b><span>Sedes en la ciudad</span></li>
+          <li><b data-count="120000" data-plus="+">0</b><span>Libros y recursos</span></li>
+          <li><b data-count="18500" data-plus="+">0</b><span>Socios activos</span></li>
+          <li><b data-count="240">0</b><span>Actividades por año</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Equipo -->
+    <section class="team" id="equipo" aria-labelledby="team-title">
+      <div class="container container--narrow">
+        <div class="team__head">
+          <h2 class="eyebrow" id="team-title">El equipo BiblioHub</h2>
+        </div>
+
+        <ul class="team__grid">
+          <li><div class="person" role="group" aria-label="Sandro">
+            <span class="person__stage">
+              <span class="person__panel" aria-hidden="true"><b>S</b></span>
+              <img class="person__img" src="images/team/2.png" alt="" width="640" height="800" loading="lazy">
+            </span>
+            <span class="person__info"><small>Estudiante de 3er año de Tec. Informática</small><strong>Sandro</strong></span>
+          </div></li>
+          <li><div class="person" role="group" aria-label="Roxy">
+            <span class="person__stage">
+              <span class="person__panel" aria-hidden="true"><b>R</b></span>
+              <img class="person__img" src="images/team/3.png" alt="" width="640" height="800" loading="lazy">
+            </span>
+            <span class="person__info"><small>Estudiante de 3er año de Tec. Informática</small><strong>Roxy</strong></span>
+          </div></li>
+          <li><div class="person" role="group" aria-label="Paula">
+            <span class="person__stage">
+              <span class="person__panel" aria-hidden="true"><b>P</b></span>
+              <img class="person__img" src="images/team/4.png" alt="" width="640" height="800" loading="lazy">
+            </span>
+            <span class="person__info"><small>Estudiante de 3er año de Tec. Informática</small><strong>Paula</strong></span>
+          </div></li>
+          <li><div class="person" role="group" aria-label="Dante">
+            <span class="person__stage">
+              <span class="person__panel" aria-hidden="true"><b>D</b></span>
+              <img class="person__img" src="images/team/1.png" alt="" width="640" height="800" loading="lazy">
+            </span>
+            <span class="person__info"><small>Estudiante de 3er año de Tec. Informática</small><strong>Dante</strong></span>
+          </div></li>
+          <li><div class="person" role="group" aria-label="Benjamin Cenoz">
+            <span class="person__stage">
+              <span class="person__panel" aria-hidden="true"><b>BC</b></span>
+              <img class="person__img" src="images/team/5.png" alt="" width="640" height="800" loading="lazy">
+            </span>
+            <span class="person__info"><small>Estudiante de 3er año de Tec. Informática</small><strong>Benjamin Cenoz</strong></span>
+          </div></li>
+        </ul>
+</div>
+    </section>
+
+  </main>
+
+  <footer class="footer-wrap" id="contacto">
+    <div class="footer">
+      <span class="footer__watermark" aria-hidden="true">BiblioHub</span>
+
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a class="footer__logo" href="#inicio" data-go="#inicio" aria-label="BiblioHub — Volver al inicio">
+            <img src="images/logo.png" alt="BiblioHub" width="480" height="300">
+          </a>
+          <p class="footer__tagline">Historias entre páginas.</p>
+          <button class="footer__news" type="button" data-modal="newsletter">Recibir novedades <svg><use href="#i-arrow"/></svg></button>
+        </div>
+
+        <nav class="footer__col" aria-label="Pie de página">
+          <h2>Navegación</h2>
+          <ul>
+            <li><a href="#inicio" data-go="#inicio">Inicio</a></li>
+            <li><a href="#catalogo" data-go="#catalogo">Catálogo</a></li>
+            <li><a href="#sedes" data-go="#sedes">Sedes</a></li>
+            <li><a href="#eventos" data-go="#eventos">Eventos</a></li>
+            <li><a href="#servicios" data-go="#servicios">Servicios</a></li>
+            <li><a href="#investigacion" data-go="#investigacion">Investigación</a></li>
+            <li><a href="#nosotros" data-go="#nosotros">Acerca de</a></li>
+            <li><a href="#equipo" data-go="#equipo">Equipo</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer__col">
+          <h2>Contacto</h2>
+          <a class="footer__mail" href="mailto:contacto@bibliohub.org">contacto@bibliohub.org</a>
+
+          <h3>Sede Central</h3>
+          <ul>
+            <li><a href="tel:+541140000000">(+54-11) 4000-0000</a></li>
+            <li><a href="tel:+541140000001">(+54-11) 4000-0001</a></li>
+            <li><a href="https://wa.me/5491100000000" target="_blank" rel="noopener">11 0000-0000 · WhatsApp</a></li>
+          </ul>
+
+          <h3>Sede Norte</h3>
+          <ul>
+            <li><a href="tel:+541140000002">(+54-11) 4000-0002 · llamadas</a></li>
+          </ul>
+          <a class="footer__how" href="#sedes" data-go="#sedes">Cómo llegar →</a>
+        </div>
+
+        <div class="footer__col">
+          <h2>Síguenos</h2>
+          <ul class="footer__social">
+            <li><a class="footer__social-logo" href="#inicio" data-go="#inicio" aria-label="BiblioHub — Volver arriba"><img src="images/logo-icon.png" alt=""></a></li>
+            <li><a href="mailto:contacto@bibliohub.org" aria-label="Correo electrónico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.500"/><path d="M3.500 7l8.500 6 8.500-6"/></svg></a></li>
+            <li><a href="https://wa.me/5491100000000" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.700 13.600L3 21l4.500-1.200A9 9 0 1 0 12 3z"/><path d="M9 8.500c0 3.500 3 6.500 6.500 6.500l1-1.500-2-1-1 .8c-.9-.4-1.700-1.200-2.100-2.100l.8-1-1-2z"/></svg></a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span class="footer__rule" aria-hidden="true"></span>
+        <div class="footer__legal">
+          <p>© 2026 BiblioHub. Todos los derechos reservados.</p>
+          <p><button type="button" data-modal="policies">Políticas y privacidad</button> · Fotos: Wikimedia Commons</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="to-top" type="button" aria-label="Volver arriba" data-go="#inicio"><svg><use href="#i-arrow"/></svg></button>
+
+  <!-- Ventana modal y avisos -->
+  <dialog class="modal" id="modal" aria-labelledby="modal-title">
+    <div class="modal__panel">
+      <button class="modal__close" type="button" aria-label="Cerrar" data-close><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg></button>
+      <div class="modal__body" id="modal-body"></div>
+    </div>
+  </dialog>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="js/carousel.js?v=12"></script>
+  <script src="js/header.js?v=12"></script>
+  <script src="js/effects.js?v=12"></script>
+  <script src="js/collage.js?v=12"></script>
+  <script src="js/voices.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+/* ---------- Encuentra tu sucursal ---------- */
+.branch {
+  position: relative;
+  padding: 55px 0 72px;
+  /* blanco arriba, crema bajo la foto */
+  background: linear-gradient(#fff 0 55px, var(--g-50) 55px);
+}
+
+.branch__photo {
+  height: 480px;
+  background:
+    url("https://commons.wikimedia.org/wiki/Special:FilePath/Exterior%20view.%20Illuminated%20west%20fa%C3%A7ade%20view%20at%20night.%20Library%20of%20Congress%20Thomas%20Jefferson%20Building%2C%20Washington%2C%20D.C.%20LCCN2007684251.tif?width=1920") center 55% / cover no-repeat,
+    url("../images/branch-placeholder.svg") center / cover no-repeat,
+    #7f97a8;
+}
+
+.branch__finder {
+  position: absolute;
+  top: 39px; left: 48px;
+  z-index: 2;
+  width: 400px;
+  padding: 34px 32px 38px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 30px 60px rgba(3, 39, 26, .3);
+}
+.branch__title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.branch__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .14);
+}
+.branch__field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 0 8px;
+  font-size: 13px;
+  background: transparent;
+}
+.branch__field input:focus-visible { outline: 0; }
+.branch__field:focus-within { outline: 3px solid #2d6cdf; outline-offset: 2px; }
+
+.btn--sm { height: 38px; padding: 0 14px; font-size: 13.5px; gap: 8px; white-space: nowrap; }
+.btn--sm .icon { width: 16px; height: 16px; }
+
+.branch__caption {
+  position: absolute;
+  right: 0;
+  top: calc(55px + 480px - 58px);
+  padding: 20px 26px;
+  background: rgba(12, 12, 12, .88);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@media (max-width: 800px) {
+  .branch { padding-top: 0; background: var(--cream); }
+  .branch__photo { height: 300px; }
+  .branch__finder {
+    position: relative;
+    top: auto; left: auto;
+    width: auto;
+    margin: 0;
+    border-radius: 0;
+    padding: 28px 16px;
+  }
+  .branch__caption { top: auto; bottom: auto; position: static; padding: 12px 16px; }
+}
+
+.branch__title { color: var(--g-700); }
+.branch__field { border: 1.5px solid transparent; transition: border-color .25s; }
+.branch__field:focus-within { border-color: var(--g-500); outline: 0; }
+
+/* Tinte verde para integrar la foto con la paleta */
+.branch__photo { position: relative; }
+.branch__photo::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(3, 39, 26, .25), rgba(3, 39, 26, .05) 40%, rgba(3, 39, 26, .5));
+  box-shadow: inset 0 0 0 9999px rgba(10, 107, 52, .0);
+}
+.branch__photo::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 1;
+  background: var(--g-700);
+  mix-blend-mode: color;
+  opacity: .8;
+}
+
+.branch { padding-bottom: 0; }

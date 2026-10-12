@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 480" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d8fdc"/><stop offset="1" stop-color="#9cc9ef"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f7d86"/><stop offset="1" stop-color="#173f4a"/>
+    </linearGradient>
+    <pattern id="stone" width="28" height="12" patternUnits="userSpaceOnUse">
+      <rect width="28" height="12" fill="#a79f90"/>
+      <rect y="0" width="28" height="1.500" fill="#8c8576"/>
+      <rect x="14" y="6" width="1.500" height="6" fill="#8c8576"/>
+      <rect x="0" y="6" width="28" height="1.500" fill="#8c8576"/>
+    </pattern>
+    <pattern id="panel" width="22" height="10" patternUnits="userSpaceOnUse">
+      <rect width="22" height="10" fill="#7f97a8"/>
+      <rect width="2" height="10" fill="#6a8194"/>
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="480" fill="url(#sky)"/>
+
+  <!-- edificio: ala izquierda -->
+  <rect x="60" y="120" width="360" height="250" fill="url(#panel)"/>
+  <rect x="400" y="60" width="440" height="300" fill="url(#stone)"/>
+  <polygon points="430,100 800,100 800,300 430,300" fill="url(#glass)"/>
+  <rect x="400" y="52" width="520" height="12" fill="#e8ecef"/>
+
+  <!-- edificio: ala derecha -->
+  <rect x="880" y="50" width="860" height="320" fill="url(#panel)"/>
+  <rect x="900" y="250" width="620" height="120" fill="url(#stone)"/>
+  <rect x="1160" y="140" width="190" height="26" fill="#9aa49a"/>
+  <rect x="1190" y="270" width="140" height="95" fill="#24282c"/>
+  <rect x="1500" y="40" width="260" height="330" fill="#6f8da3" opacity=".85"/>
+
+  <!-- muro de hormigón y escaleras -->
+  <rect x="0" y="380" width="1920" height="100" fill="#b3ada2"/>
+  <rect x="1100" y="360" width="820" height="120" fill="#a29c92"/>
+  <g fill="#c9c4ba" stroke="#8f897f" stroke-width="2">
+    <rect x="780" y="395" width="340" height="14"/>
+    <rect x="800" y="409" width="300" height="14"/>
+    <rect x="820" y="423" width="260" height="14"/>
+    <rect x="840" y="437" width="220" height="14"/>
+  </g>
+  <g stroke="#d7dbde" stroke-width="3" fill="none">
+    <path d="M700 470 L900 400 L1010 360"/>
+    <path d="M1180 470 L1010 400"/>
+  </g>
+  <text x="1400" y="450" font-family="Georgia,serif" font-size="64" fill="#4a463f" letter-spacing="18">2411</text>
+
+  <!-- árboles -->
+  <g>
+    <path d="M520 0 L560 380 L585 380 L560 0Z" fill="#cfc7b6"/>
+    <path d="M1380 0 L1360 390 L1400 390 L1430 0Z" fill="#d9d2c2"/>
+    <path d="M1590 0 L1500 380 L1530 380 L1620 0Z" fill="#cfc7b6"/>
+    <g fill="#d9a830" opacity=".9">
+      <circle cx="640" cy="40" r="60"/><circle cx="740" cy="20" r="50"/><circle cx="560" cy="20" r="45"/>
+      <circle cx="1330" cy="30" r="70"/><circle cx="1470" cy="20" r="55"/><circle cx="1640" cy="40" r="70"/><circle cx="1780" cy="60" r="55"/>
+    </g>
+  </g>
+
+  <!-- vegetación -->
+  <g fill="#3f7d3a">
+    <ellipse cx="100" cy="400" rx="120" ry="44"/>
+    <ellipse cx="260" cy="420" rx="110" ry="36"/>
+    <ellipse cx="1000" cy="372" rx="70" ry="28"/>
+    <ellipse cx="1680" cy="368" rx="80" ry="30"/>
+  </g>
+  <g fill="#6aa04a">
+    <ellipse cx="180" cy="385" rx="80" ry="26"/>
+    <ellipse cx="420" cy="410" rx="70" ry="24"/>
+  </g>
+</svg>

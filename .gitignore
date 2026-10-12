@@ -1,0 +1,9 @@
+# Configuración local del editor / servidor de vista previa
+.claude/
+
+# Fotos originales sin recortar (se usan las de images/team/)
+/1.jpg
+/2.jpg
+/3.jpg
+/4.jpg
+/5.jpg
