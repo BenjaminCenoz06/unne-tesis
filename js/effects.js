@@ -80,4 +80,32 @@
     }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
     els.forEach((el) => io.observe(el));
   }
+
+  /* HERO_VIDEO: calidad según pantalla y conexión; si no se puede, queda la foto */
+  const video = document.getElementById('hero-video');
+  if (video && !reduce) {
+    const conn = navigator.connection || {};
+    const saver = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
+    if (!saver) {
+      const w = Math.max(window.screen.width, window.innerWidth) * (window.devicePixelRatio || 1);
+      const mobile = window.matchMedia('(max-width: 960px)').matches;
+      const order = mobile && w < 1100 ? ['720', '1080'] : ['1080', '720'];
+      let i = 0;
+      const load = () => {
+        if (i >= order.length) return;
+        video.src = 'videos/hero-' + order[i++] + '.mp4';
+        video.load();
+      };
+      video.addEventListener('error', load);
+      video.addEventListener('playing', () => video.classList.add('is-playing'));
+      load();
+      const tryPlay = () => { const p = video.play(); if (p && p.catch) p.catch(() => {}); };
+      video.addEventListener('loadeddata', tryPlay);
+      // pausa cuando no se ve (ahorra batería y datos)
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) tryPlay(); else video.pause(); }), { threshold: 0.05 }).observe(video);
+      }
+      document.addEventListener('visibilitychange', () => { if (document.hidden) video.pause(); else tryPlay(); });
+    }
+  }
 })();
