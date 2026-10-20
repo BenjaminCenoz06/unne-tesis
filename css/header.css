@@ -61,13 +61,7 @@ body {
 .skip:focus { top: 8px; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
-/* ---------- Barra de progreso y precarga ---------- */
-.progress {
-  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 400;
-  background: linear-gradient(90deg, var(--g-500), var(--gold));
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-}
+/* ---------- Precarga ---------- */
 .preloader {
   position: fixed; inset: 0; z-index: 500;
   display: grid; place-items: center;

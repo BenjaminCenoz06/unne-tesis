@@ -2,7 +2,6 @@
 (() => {
   const root = document.documentElement;
   const header = document.getElementById('site-header');
-  const progress = document.getElementById('progress');
   const preloader = document.getElementById('preloader');
   const heroBg = document.getElementById('hero-bg');
   const heroText = document.getElementById('hero-text');
@@ -38,8 +37,6 @@
     state.scrolled = y > 40;
     paintHeader();
 
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    progress.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
 
     if (!reduce && heroBg && y < window.innerHeight * 1.2) {
       heroBg.style.setProperty('--py', `${y * 0.28}px`);
