@@ -506,3 +506,9 @@ html, body { overflow-x: clip; }
   .topbar .chip { padding: 0 9px; gap: 6px; font-size: 11px; }
   .topbar__left, .topbar__right { gap: 4px; }
 }
+
+/* Lupa de búsqueda sin círculo */
+.nav-search { border: 0; background: transparent; }
+.nav-search:hover { background: transparent; border-color: transparent; color: var(--gold); transform: scale(1.12); }
+.nav-search svg { width: 20px; height: 20px; }
+@media (max-width: 960px) { .nav-search--m svg { width: 22px; height: 22px; } }
