@@ -361,10 +361,10 @@ html.modal-open { overflow: hidden; }
 .footer__legal button:hover { color: var(--g-700); }
 
 /* ---------- Modos de accesibilidad ---------- */
-html.a11y-contrast main, html.a11y-contrast .footer-wrap { filter: contrast(1.22) saturate(1.1); }
+html.a11y-contrast main { filter: contrast(1.22) saturate(1.1); }
 html.a11y-contrast { --ink: #000; }
 html.a11y-contrast .site-header.is-solid { background: #fff; }
-html.a11y-contrast .vcard, html.a11y-contrast .footer { color: #1a1a1a; }
+html.a11y-contrast .vcard { color: #1a1a1a; }
 html.a11y-font body, html.a11y-font body * { font-family: "Atkinson Hyperlegible", Arial, sans-serif !important; letter-spacing: normal; }
 html.a11y-font .hero__title, html.a11y-font .section-title { letter-spacing: 0; }
 html.a11y-links main a, html.a11y-links footer a { text-decoration: underline !important; text-underline-offset: 3px; }

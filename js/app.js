@@ -592,6 +592,10 @@
     if (window.closeAllMenus) window.closeAllMenus();
     if (window.closeTopSearch) window.closeTopSearch();
     closeModal();
+    if (id === '#contacto') {   // el footer es una cortina fija: se llega bajando hasta el final
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      return;
+    }
     el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }
 
