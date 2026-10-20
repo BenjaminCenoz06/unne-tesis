@@ -128,6 +128,7 @@ window.targetAttrs = targetAttrs;
     closeAll();
     nav.classList.remove('open');
     toggle.setAttribute('aria-expanded', 'false');
+    document.documentElement.classList.remove('menu-open');
     syncHeader();
   };
 
@@ -163,6 +164,7 @@ window.targetAttrs = targetAttrs;
   toggle.addEventListener('click', () => {
     const open = nav.classList.toggle('open');
     toggle.setAttribute('aria-expanded', String(open));
+    document.documentElement.classList.toggle('menu-open', open);
     syncHeader();
   });
 

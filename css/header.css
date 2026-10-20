@@ -437,3 +437,72 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1; translate: none; }
 }
+
+/* =========================================================
+   Móvil y tablet: sin barra superior; sus accesos pasan al menú
+   ========================================================= */
+.nav-search--m, .mobile-extra { display: none; }
+
+@media (max-width: 960px) {
+  .topbar, .topsearch { display: none !important; }
+
+  .mainbar { gap: 8px; align-items: center; }
+  .logo { padding: 10px 0 8px; margin-right: auto; }
+  .is-scrolled .logo { width: 80px; padding: 6px 0 5px; }
+
+  .nav-search--m { display: grid; margin-left: auto; width: 40px; height: 40px; align-self: center; }
+  .nav-search--m svg { width: 18px; height: 18px; }
+  .nav-toggle { padding: 8px 6px; }
+
+  .mainnav.open { padding-bottom: 20px; }
+  .mobile-extra { display: block; padding-top: 18px; border-top: 1px solid var(--line); margin-top: 4px; }
+  .mobile-extra__title {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--g-700); margin: 6px 0 10px;
+  }
+  .mobile-extra__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .mobile-extra__grid button {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 12px; min-height: 48px;
+    background: #fff; border: 1px solid var(--g-100); border-radius: 12px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink); text-align: left; line-height: 1.2;
+  }
+  .mobile-extra__grid svg { width: 17px; height: 17px; fill: var(--g-700); flex: none; }
+  .mobile-extra__a11y { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mobile-extra__a11y button {
+    padding: 9px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid var(--g-200); color: var(--g-800); background: transparent;
+  }
+  .mobile-extra__a11y button[aria-pressed="true"] { background: var(--g-900); border-color: var(--g-900); color: #fff; }
+}
+
+@media (max-width: 380px) {
+  .mobile-extra__grid { grid-template-columns: 1fr; }
+}
+html.menu-open { overflow: hidden; }
+
+/* Menú móvil: panel opaco a pantalla completa, con scroll propio */
+@media (max-width: 960px) {
+  html.menu-open .site-header {
+    background: var(--cream);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    color: var(--ink);
+  }
+  html.menu-open .site-header .logo .logo__white { opacity: 0; }
+  html.menu-open .site-header .logo .logo__color { opacity: 1; }
+  html.menu-open .mainnav.open { max-height: none; overflow: visible; padding-bottom: 36px; }
+  html.menu-open .wa-float, html.menu-open .to-top { display: none; }
+}
+@media (max-width: 960px) {
+  html.menu-open .mainbar { position: sticky; top: 0; z-index: 3; background: var(--cream); }
+}
+
+/* Nunca scroll horizontal; chips algo más ajustados en notebooks chicos */
+html, body { overflow-x: clip; }
+@media (min-width: 961px) and (max-width: 1100px) {
+  .topbar .chip { padding: 0 9px; gap: 6px; font-size: 11px; }
+  .topbar__left, .topbar__right { gap: 4px; }
+}

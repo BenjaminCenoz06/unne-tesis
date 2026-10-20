@@ -135,6 +135,10 @@
           <img class="logo__color" src="images/logo.png" alt="" aria-hidden="true" width="480" height="300">
         </a>
 
+        <button class="nav-search nav-search--m" type="button" data-open-search="catalog" aria-label="Buscar en BiblioHub">
+          <svg><use href="#i-search"/></svg>
+        </button>
+
         <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainnav">
           <span></span><span></span><span></span>
         </button>
@@ -144,6 +148,25 @@
           <button class="nav-search" data-search="catalog" data-label="Buscar en el catálogo" aria-label="Buscar" aria-expanded="false">
             <svg><use href="#i-search"/></svg>
           </button>
+        
+          <div class="mobile-extra">
+            <p class="mobile-extra__title">Accesos rápidos</p>
+            <div class="mobile-extra__grid">
+              <button type="button" data-modal="account"><svg><use href="#i-user"/></svg><span class="js-account-label">Mi cuenta</span></button>
+              <button type="button" data-modal="card"><svg><use href="#i-card"/></svg>Obtener carné</button>
+              <button type="button" data-open-search="catalog"><svg><use href="#i-book"/></svg>Buscar libros</button>
+              <button type="button" data-open-search="website"><svg><use href="#i-cursor"/></svg>Buscar en el sitio</button>
+              <button type="button" data-modal="help"><svg><use href="#i-help"/></svg>Obtener ayuda</button>
+              <button type="button" data-go="#sedes"><svg><use href="#i-pin"/></svg>Sedes y horarios</button>
+            </div>
+            <p class="mobile-extra__title">Accesibilidad</p>
+            <div class="mobile-extra__a11y">
+              <button type="button" data-a11y="contrast" aria-pressed="false">Alto contraste</button>
+              <button type="button" data-a11y="font" aria-pressed="false">Tipografía legible</button>
+              <button type="button" data-a11y="links" aria-pressed="false">Subrayar enlaces</button>
+              <button type="button" data-a11y="motion" aria-pressed="false">Reducir animaciones</button>
+            </div>
+          </div>
         </nav>
       </div>
 
@@ -616,11 +639,11 @@
   </dialog>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
-  <script src="js/carousel.js?v=16"></script>
-  <script src="js/header.js?v=16"></script>
-  <script src="js/effects.js?v=16"></script>
-  <script src="js/collage.js?v=16"></script>
-  <script src="js/voices.js?v=16"></script>
-  <script src="js/app.js?v=16"></script>
+  <script src="js/carousel.js?v=18"></script>
+  <script src="js/header.js?v=18"></script>
+  <script src="js/effects.js?v=18"></script>
+  <script src="js/collage.js?v=18"></script>
+  <script src="js/voices.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
 </body>
 </html>
