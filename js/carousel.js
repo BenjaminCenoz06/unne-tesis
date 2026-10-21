@@ -19,56 +19,56 @@ const SHELVES = [
     id: 'ficcion',
     title: 'Novela y ficción',
     books: [
-      ['Cien años de soledad', 'Gabriel García Márquez', 471, 3, 'sun'],
-      ['Rayuela', 'Julio Cortázar', 600, 2, 'wine'],
-      ['Ficciones', 'Jorge Luis Borges', 224, 4, 'navy'],
-      ['La casa de los espíritus', 'Isabel Allende', 448, 0, 'plum'],
-      ['Pedro Páramo', 'Juan Rulfo', 160, 5, 'sand'],
-      ['El túnel', 'Ernesto Sabato', 176, 2, 'slate'],
-      ['La sombra del viento', 'Carlos Ruiz Zafón', 576, 1, 'forest'],
-      ['Los detectives salvajes', 'Roberto Bolaño', 718, 0, 'coral'],
+      ['Cien años de soledad', 'Gabriel García Márquez', 471, 3, 'sun', 'cien-anos-de-soledad', 0, 1],
+      ['Rayuela', 'Julio Cortázar', 600, 2, 'wine', 'rayuela', 0, 1],
+      ['Ficciones', 'Jorge Luis Borges', 224, 4, 'navy', 'ficciones', 0, 1],
+      ['La casa de los espíritus', 'Isabel Allende', 448, 0, 'plum', 'la-casa-de-los-espiritus', 0, 1],
+      ['Pedro Páramo', 'Juan Rulfo', 160, 5, 'sand', 'pedro-paramo', 0, 1],
+      ['El túnel', 'Ernesto Sabato', 65, 2, 'slate', 'el-tunel', 1, 1],
+      ['La sombra del viento', 'Carlos Ruiz Zafón', 455, 1, 'forest', 'la-sombra-del-viento', 1, 2],
+      ['Los detectives salvajes', 'Roberto Bolaño', 653, 0, 'coral', 'los-detectives-salvajes', 1, 2],
     ],
   },
   {
     id: 'ciencia',
     title: 'Ciencia y tecnología',
     books: [
-      ['Breve historia del tiempo', 'Stephen Hawking', 256, 4, 'navy'],
-      ['Cosmos', 'Carl Sagan', 432, 2, 'plum'],
-      ['El gen egoísta', 'Richard Dawkins', 464, 1, 'teal'],
-      ['Una breve historia de casi todo', 'Bill Bryson', 640, 3, 'sun'],
-      ['El origen de las especies', 'Charles Darwin', 512, 0, 'forest'],
-      ['Astrofísica para gente con prisa', 'Neil deGrasse Tyson', 224, 6, 'slate'],
-      ['El universo elegante', 'Brian Greene', 480, 2, 'sky'],
-      ['La doble hélice', 'James D. Watson', 192, 1, 'coral'],
+      ['Breve historia del tiempo', 'Stephen Hawking', 177, 4, 'navy', 'breve-historia-del-tiempo', 1, 1],
+      ['Cosmos', 'Carl Sagan', 372, 2, 'plum', 'cosmos', 1, 2],
+      ['El gen egoísta', 'Richard Dawkins', 345, 1, 'teal', 'el-gen-egoista', 1, 1],
+      ['Una breve historia de casi todo', 'Bill Bryson', 226, 3, 'sun', 'una-breve-historia-de-casi-todo', 1, 1],
+      ['El origen de las especies', 'Charles Darwin', 516, 0, 'forest', 'el-origen-de-las-especies', 1, 1],
+      ['Astrofísica para gente con prisa', 'Neil deGrasse Tyson', 30, 6, 'slate', 'astrofisica-para-gente-con-prisa', 1, 1],
+      ['El universo elegante', 'Brian Greene', 189, 2, 'sky', 'el-universo-elegante', 1, 1],
+      ['La doble hélice', 'James D. Watson', 93, 1, 'coral', 'la-doble-helice', 1, 1],
     ],
   },
   {
     id: 'historia',
     title: 'Historia y sociedad',
     books: [
-      ['Sapiens', 'Yuval Noah Harari', 496, 5, 'sand'],
-      ['Armas, gérmenes y acero', 'Jared Diamond', 592, 1, 'wine'],
-      ['Las venas abiertas de América Latina', 'Eduardo Galeano', 480, 3, 'forest'],
-      ['SPQR', 'Mary Beard', 608, 0, 'slate'],
-      ['Los orígenes del totalitarismo', 'Hannah Arendt', 704, 2, 'navy'],
-      ['La Primera Guerra Mundial', 'John Keegan', 544, 1, 'coral'],
-      ['Historia de las Indias', 'Bartolomé de las Casas', 400, 2, 'sun'],
-      ['El Mediterráneo', 'Fernand Braudel', 720, 0, 'teal'],
+      ['Sapiens', 'Yuval Noah Harari', 480, 5, 'sand', 'sapiens', 1, 2],
+      ['Armas, gérmenes y acero', 'Jared Diamond', 728, 1, 'wine', 'armas-germenes-y-acero', 1, 2],
+      ['Las venas abiertas de América Latina', 'Eduardo Galeano', 158, 3, 'forest', 'las-venas-abiertas-de-america-latina', 1, 2],
+      ['SPQR', 'Mary Beard', 492, 0, 'slate', 'spqr', 1, 2],
+      ['Los orígenes del totalitarismo', 'Hannah Arendt', 427, 2, 'navy', 'los-origenes-del-totalitarismo', 1, 2],
+      ['Primera Guerra Mundial: Los antecedentes', 'Luppa', 49, 1, 'coral', 'la-primera-guerra-mundial', 1, 2],
+      ['Historia de la India', 'IGNOU', 126, 2, 'sun', 'history-of-india', 1, 1],
+      ['El Mediterráneo', 'Fernand Braudel', 720, 0, 'teal', 'el-mediterraneo', 0, 1],
     ],
   },
   {
     id: 'infantil',
     title: 'Infantil y juvenil',
     books: [
-      ['El principito', 'Antoine de Saint-Exupéry', 96, 7, 'sky'],
-      ['Matilda', 'Roald Dahl', 240, 3, 'coral'],
-      ['Alicia en el país de las maravillas', 'Lewis Carroll', 160, 4, 'plum'],
-      ['Harry Potter y la piedra filosofal', 'J. K. Rowling', 256, 0, 'wine'],
-      ['Charlie y la fábrica de chocolate', 'Roald Dahl', 192, 2, 'sun'],
-      ['Peter Pan', 'J. M. Barrie', 208, 3, 'forest'],
-      ['El jardín secreto', 'Frances H. Burnett', 288, 1, 'teal'],
-      ['Mujercitas', 'Louisa May Alcott', 400, 2, 'sand'],
+      ['El principito', 'Antoine de Saint-Exupéry', 96, 7, 'sky', 'el-principito', 0, 1],
+      ['Matilda', 'Roald Dahl', 154, 3, 'coral', 'matilda', 1, 2],
+      ['Alicia en el país de las maravillas', 'Lewis Carroll', 201, 4, 'plum', 'alicia-en-el-pais-de-las-maravillas', 1, 1],
+      ['Harry Potter y la piedra filosofal', 'J. K. Rowling', 146, 0, 'wine', 'harry-potter-y-la-piedra-filosofal', 1, 1],
+      ['Charlie y la fábrica de chocolate', 'Roald Dahl', 85, 2, 'sun', 'charlie-y-la-fabrica-de-chocolate', 1, 1],
+      ['Peter Pan', 'J. M. Barrie', 6, 3, 'forest', 'peter-pan', 1, 1],
+      ['El jardín secreto', 'Frances H. Burnett', 102, 1, 'teal', 'el-jardin-secreto', 1, 1],
+      ['Mujercitas', 'Louisa May Alcott', 255, 2, 'sand', 'mujercitas', 1, 1],
     ],
   },
 ];
@@ -77,17 +77,19 @@ const SHELVES = [
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const vars = (key) => { const [a, b, t] = P[key]; return `--a:${a};--b:${b};--t:${t}`; };
 
-function slideInner([title, author, pages, copies], shelfId, i) {
+const coverUrl = (b) => `images/covers/${b[5]}.jpg`;
+function slideInner(b, shelfId, i) {
+  const [title, author, pages, copies] = b;
   const status = copies > 0
     ? `<strong class="ok">${copies} ${copies === 1 ? 'copia disponible' : 'copias disponibles'}</strong>`
     : `<strong class="no">Prestado</strong>`;
   return `
-      <a class="slide__cover book" href="#${shelfId}" data-book="${shelfId}:${i}" aria-label="${esc(title)}, de ${esc(author)}">
-        <span class="book__author">${esc(author)}</span>
-        <span class="book__title">${esc(title)}</span>
+      <a class="slide__cover book book--img" href="#${shelfId}" data-book="${shelfId}:${i}" aria-label="${esc(title)}, de ${esc(author)}">
+        <img src="${coverUrl(b)}" alt="Portada de ${esc(title)}" width="600" height="830" loading="lazy" decoding="async" draggable="false">
+        ${b[6] ? '<span class="book__tag">Leer online</span>' : ''}
       </a>
       <div class="slide__info">
-        <span class="thumb" aria-hidden="true"></span>
+        <span class="thumb" style="background-image:url('${coverUrl(b)}')" aria-hidden="true"></span>
         <div>
           <h3 class="slide__title">${esc(title)}</h3>
           <p class="slide__meta">${status}<span>${pages} págs.</span></p>
@@ -186,7 +188,7 @@ SHELVES.forEach((s) => mount.appendChild(buildShelf(s)));
 
 /* API pública para js/app.js */
 window.Biblio = Object.assign(window.Biblio || {}, {
-  SHELVES, P, bookVars: vars,
+  SHELVES, P, bookVars: vars, coverUrl,
   refreshBook(shelfId, i) { const s = SHELVES.find((x) => x.id === shelfId); if (s && s._refresh) s._refresh(i); },
   focusBook(shelfId, i) { const s = SHELVES.find((x) => x.id === shelfId); if (s && s._focus) s._focus(i); },
 });

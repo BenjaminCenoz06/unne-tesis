@@ -41,7 +41,7 @@
   const B = () => window.Biblio;
   const SHELVES = () => (B() && B().SHELVES) || [];
   const bookOf = (shelf, i) => { const s = SHELVES().find((x) => x.id === shelf); return s ? { s, b: s.books[i], i } : null; };
-  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4] })));
+  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4], slug: b[5], pdf: b[6] })));
 
   // Aplica los préstamos guardados a las copias disponibles
   function applyLoans() {
@@ -433,6 +433,8 @@
   function openBook(shelf, i) {
     const r = bookOf(shelf, i); if (!r) return;
     const [title, author, pages, copies] = r.b;
+    const canRead = !!r.b[6];
+    const cover = B().coverUrl(r.b);
     const idx = SHELVES().findIndex((s) => s.id === shelf);
     const mine = state.loans.find((l) => l.shelf === shelf && l.i === i);
     const waiting = state.waits.find((w) => w.shelf === shelf && w.i === i);
@@ -442,21 +444,42 @@
     else if (waiting) action = btn('Salir de la lista de espera', `data-unwait-book="${shelf}:${i}"`, 'btn--outline');
     else action = btn('Unirme a la lista de espera', `data-wait="${shelf}:${i}"`);
     openModal(`<div class="bookview">
-        <div class="book book--lg" style="${B().bookVars(r.b[4])}"><span class="book__author">${esc(author)}</span><span class="book__title">${esc(title)}</span></div>
+        <div class="bookshow${canRead ? ' is-readable' : ''}"${canRead ? ` data-read="${shelf}:${i}" role="button" tabindex="0" aria-label="Leer ${esc(title)} online"` : ''}>
+          <div class="bookshow__book">
+            <img class="bookshow__front" src="${cover}" alt="Portada de ${esc(title)}" draggable="false">
+            <span class="bookshow__pages" aria-hidden="true"></span>
+            <span class="bookshow__spine" aria-hidden="true"></span>
+            <span class="bookshow__back" aria-hidden="true"></span>
+          </div>
+          ${canRead ? '<span class="bookshow__hint">Toca para abrir</span>' : ''}
+        </div>
         <div class="bookview__info">
           <p class="eyebrow">${esc(r.s.title)}</p>
           <h2 class="modal__title" id="modal-title">${esc(title)}</h2>
           <p class="muted">por ${esc(author)}</p>
           <ul class="facts">
             <li><span>Páginas</span><b>${pages}</b></li>
+            <li><span>Lectura online</span><b class="${canRead ? 'ok' : ''}">${canRead ? 'Disponible' : 'Próximamente'}</b></li>
             <li><span>Disponibilidad</span><b class="${copies > 0 ? 'ok' : 'no'}">${mine ? 'Lo tienes prestado' : copies > 0 ? `${copies} ${copies === 1 ? 'copia' : 'copias'}` : 'Prestado'}</b></li>
             <li><span>Ubicación</span><b>${esc(place(idx, i))}</b></li>
           </ul>
           <p>Forma parte de nuestra colección de <b>${esc(r.s.title.toLowerCase())}</b>. ${mine ? `Devuélvelo antes del ${fmtShort(mine.due)}.` : copies > 0 ? 'Puedes retirarlo en la Sede Central con tu carné.' : 'Te avisaremos cuando vuelva a estar disponible.'}</p>
-          <div class="modal__actions">${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
+          <div class="modal__actions">${canRead ? btn('<svg class="icon"><use href="#i-openbook"/></svg> Leer ahora', `data-read="${shelf}:${i}"`, 'btn--gold') : ''}${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
         </div>
       </div>`, { wide: true, focus: false });
   }
+  function readBook(shelf, i) {
+    const r = bookOf(shelf, i); if (!r || !r.b[6] || !window.BiblioReader) return;
+    const [title, author] = r.b;
+    closeAllSafe();
+    closeModal();
+    window.__readerReturn = () => openBook(shelf, i);
+    window.BiblioReader.open({ slug: r.b[5], title, author, cover: B().coverUrl(r.b), start: r.b[7] || 1 });
+  }
+  document.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if ((e.key === 'Enter' || e.key === ' ') && t && t.matches && t.matches('.bookshow.is-readable')) { e.preventDefault(); t.click(); }
+  });
   function loan(shelf, i) {
     const r = bookOf(shelf, i); if (!r || r.b[3] < 1) return;
     if (!state.user) {
@@ -541,7 +564,7 @@
     if (SEARCH.scope === 'catalog') {
       box.innerHTML = res.length ? res.map((b) => `
         <li><button type="button" class="result" data-book="${b.shelf}:${b.i}">
-          <span class="thumb" style="${B().bookVars(b.pal)}"></span>
+          <span class="thumb" style="background-image:url('images/covers/${b.slug}.jpg')"></span>
           <span class="result__main"><b>${esc(b.title)}</b><small>${esc(b.author)} · ${esc(b.cat)}</small></span>
           <span class="result__status ${b.copies > 0 ? 'ok' : 'no'}">${b.copies > 0 ? 'Disponible' : 'Prestado'}</span>
         </button></li>`).join('') : `<li class="empty"><b>Sin resultados</b><p>Prueba con otro título, autor o categoría.</p></li>`;
@@ -620,6 +643,11 @@
       }
       toast('Archivo de calendario descargado');
       return;
+    }
+
+    if ((el = q('[data-read]'))) {
+      e.preventDefault();
+      const [s, i] = el.dataset.read.split(':'); readBook(s, Number(i)); return;
     }
 
     if ((el = q('[data-loan]'))) { const [s, i] = el.dataset.loan.split(':'); loan(s, Number(i)); return; }
