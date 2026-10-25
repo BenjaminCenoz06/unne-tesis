@@ -15,6 +15,26 @@
   }));
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  const ls = {
+    get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? d : v; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* sin almacenamiento */ } },
+  };
+  // sonido de hoja de papel (sintetizado, sin archivos)
+  let actx = null, noiseBuf = null;
+  function paperSound() {
+    if (!ls.get('bh_sound', true)) return;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      if (!noiseBuf) { noiseBuf = actx.createBuffer(1, actx.sampleRate * 0.5, actx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+      const t = actx.currentTime, src = actx.createBufferSource(); src.buffer = noiseBuf;
+      const hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1400;
+      const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.setValueAtTime(2600, t); bp.frequency.exponentialRampToValueAtTime(5200, t + 0.32); bp.Q.value = 0.7;
+      const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.16, t + 0.06); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+      src.connect(hp); hp.connect(bp); bp.connect(g); g.connect(actx.destination); src.start(t); src.stop(t + 0.45);
+    } catch { /* audio no disponible */ }
+  }
+
   /* ---------- estructura del lector (se crea una sola vez) ---------- */
   let root;
   function build() {
@@ -32,6 +52,7 @@
         <div class="reader__title"><b id="reader-title"></b><span id="reader-author"></span></div>
         <div class="reader__count" id="reader-count" aria-live="polite"></div>
         <div class="reader__tools">
+          <button class="reader__btn" id="reader-snd" type="button" title="Sonido de las hojas" aria-label="Sonido de las hojas" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="w" d="M16.500 8.500a5 5 0 0 1 0 7"/></svg></button>
           <a class="reader__btn" id="reader-dl" href="#" download title="Descargar PDF" aria-label="Descargar PDF"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4.500-4.500M12 15l4.500-4.500M4 20h16"/></svg></a>
           <button class="reader__btn" id="reader-fs" type="button" title="Pantalla completa" aria-label="Pantalla completa"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
           <button class="reader__btn reader__btn--close" id="reader-close" type="button" title="Cerrar" aria-label="Cerrar lector"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
@@ -55,6 +76,10 @@
       </footer>`;
     document.body.appendChild(root);
     root.querySelector('#reader-close').addEventListener('click', close);
+    const snd = root.querySelector('#reader-snd');
+    const paintSnd = () => { const on = ls.get('bh_sound', true); snd.setAttribute('aria-pressed', String(on)); snd.classList.toggle('is-off', !on); };
+    snd.addEventListener('click', () => { ls.set('bh_sound', !ls.get('bh_sound', true)); paintSnd(); paperSound(); });
+    paintSnd();
     root.querySelector('#reader-fs').addEventListener('click', () => {
       if (!document.fullscreenElement) root.requestFullscreen && root.requestFullscreen().catch(() => {});
       else document.exitFullscreen();
@@ -192,8 +217,13 @@
         $('#reader-prev').disabled = current === 0;
         $('#reader-next').disabled = current >= pages.length - 1;
         schedule();
+        const prog = ls.get('bh_progress', {});
+        const pg = pages[current] && pages[current].dataset.pdf ? Number(pages[current].dataset.pdf) : 0;
+        if (pg > 1) prog[slug] = pg; else if (current === 0) delete prog[slug];
+        ls.set('bh_progress', prog);
       };
       flip.on('flip', update);
+      flip.on('changeState', (e) => { if (e.data === 'flipping') paperSound(); });
       flip.on('changeOrientation', () => { done = new Set(); schedule(); });
 
       // render: la portada ya está; pedimos las primeras hojas
@@ -248,6 +278,11 @@
 
       bookEl.classList.add('is-ready');
       $('#reader-loading').classList.add('is-hidden');
+      const saved = ls.get('bh_progress', {})[slug];
+      if (saved && saved > start) {
+        const idx = pages.findIndex((p) => Number(p.dataset.pdf) === saved);
+        if (idx > 0) { flip.turnToPage(idx - (idx % 2 === 0 ? 0 : 1)); setTimeout(() => window.Biblio && window.Biblio.toast && window.Biblio.toast(`Seguimos en la página ${saved}`), 600); }
+      }
       update();
     } catch (err) {
       if (my !== token) return;

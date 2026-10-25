@@ -575,3 +575,27 @@ main section[id], .footer-wrap[id] { scroll-margin-top: 76px; }
   .wa-float__label { display: none; }
   .to-top { right: 19px; bottom: 84px; }
 }
+
+/* ---------- calificación con estrellas ---------- */
+.bookview__by { color: #4c5a51; font-size: 15.5px; margin: 2px 0 10px; }
+.bookview__by b { color: var(--g-950); font-weight: 600; }
+.rate { display: grid; gap: 8px; padding: 12px 14px; margin: 4px 0 10px; border: 1px solid var(--g-100); border-radius: 14px; background: var(--g-50); }
+.rate__sum { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 14px; }
+.rate__sum .stars { font-size: 19px; }
+.rate__sum b { font-size: 17px; } .rate__sum span { color: #5e6b62; }
+.rate__mine { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13.5px; color: #4c5a51; }
+.rate__stars { display: inline-flex; }
+.rstar { font-size: 26px; line-height: 1; padding: 2px 3px; color: #cdd5cd; transition: color .15s, transform .35s var(--ease); cursor: pointer; }
+.rstar.on { color: var(--gold); }
+.rate__stars:hover .rstar { color: var(--gold); }
+.rate__stars .rstar:hover ~ .rstar { color: #cdd5cd; }
+.rstar:hover { transform: scale(1.25) rotate(-8deg); }
+.rstar:focus-visible { outline-offset: 0; border-radius: 6px; }
+.note { display: grid; gap: 2px; padding: 12px 14px; margin: 6px 0 2px; border-radius: 12px; background: #fbf5e4; border: 1px solid #efe0b0; font-size: 14px; line-height: 1.45; }
+.note b { color: #6a4d0b; } .note span { color: #5b5340; }
+.note--ok { background: var(--g-50); border-color: var(--g-200); } .note--ok b { color: var(--g-800); } .note--ok span { color: #3f5247; }
+.code { font-family: "Space Mono", ui-monospace, monospace; font-size: 1.15em; letter-spacing: .06em; background: var(--g-100); padding: 2px 8px; border-radius: 6px; color: var(--g-900); }
+.row-actions { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.info-rows--action li { flex-wrap: wrap; }
+.facts li { gap: 12px; } .facts b { text-align: right; }
+@media (max-width: 640px) { .rate__sum .stars { font-size: 17px; } .bookview__info { width: 100%; } }

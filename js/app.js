@@ -31,24 +31,28 @@
     loans: store.get('bh_loans', []),     // { shelf, i, title, due }
     waits: store.get('bh_waits', []),     // { shelf, i, title }
     rooms: store.get('bh_rooms', []),     // { sede, date, time, people }
+    reserves: store.get('bh_reserves', []), // { shelf, i, slug, title, code, sede, pick, made }
   };
   const save = () => {
     store.set('bh_user', state.user); store.set('bh_card', state.card);
-    store.set('bh_loans', state.loans); store.set('bh_waits', state.waits); store.set('bh_rooms', state.rooms);
+    store.set('bh_loans', state.loans); store.set('bh_waits', state.waits); store.set('bh_rooms', state.rooms); store.set('bh_reserves', state.reserves);
   };
 
   /* ---------- Datos del catálogo ---------- */
   const B = () => window.Biblio;
   const SHELVES = () => (B() && B().SHELVES) || [];
   const bookOf = (shelf, i) => { const s = SHELVES().find((x) => x.id === shelf); return s ? { s, b: s.books[i], i } : null; };
-  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4], slug: b[5], pdf: b[6] })));
+  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4], slug: b[5], pdf: b[6], year: b[8] })));
 
-  // Aplica los préstamos guardados a las copias disponibles
-  function applyLoans() {
-    state.loans.forEach((l) => {
-      const r = bookOf(l.shelf, l.i);
-      if (r && r.b[3] > 0) { r.b[3] -= 1; B().refreshBook(l.shelf, l.i); }
+  // Las reservas guardadas descuentan copias disponibles
+  function applyReserves() {
+    state.loans = []; // formato anterior (préstamos) ya no se usa
+    state.reserves = state.reserves.filter((r) => bookOf(r.shelf, r.i));
+    state.reserves.forEach((r) => {
+      const x = bookOf(r.shelf, r.i);
+      if (x && x.b[3] > 0) { x.b[3] -= 1; B().refreshBook(r.shelf, r.i); }
     });
+    save();
   }
 
   /* ---------- Avisos (toasts) ---------- */
@@ -275,6 +279,14 @@
 
   const done = (title, body, actions = '') => `<div class="success"><span class="success__icon"><svg viewBox="0 0 24 24"><path d="M9.500 16.200L5.300 12 3.900 13.400l5.600 5.600L21 7.500 19.600 6.100z"/></svg></span>${head(title)}<p class="modal__intro">${body}</p><div class="modal__actions">${actions}${btn('Cerrar', 'data-close', 'btn--outline')}</div></div>`;
 
+  let pendingAction = null;
+  const requireCard = (fn) => {
+    if (state.card) return fn();
+    pendingAction = fn;
+    toast('Para reservar necesitas tu carné (es gratis)', 'info');
+    FORMS.card();
+  };
+
   const FORMS = {
     help: (o = {}) => openForm({
       title: 'Pregunte a un bibliotecario', intro: 'Cuéntanos qué necesitas y un bibliotecario te responde por correo en menos de 24 horas.',
@@ -361,7 +373,7 @@
           save(); paintAccount();
           toast('¡Tu carné está listo!');
           return done(`¡Bienvenido/a, ${esc(d.nombre.split(' ')[0])}!`, 'Este es tu carné digital. Muéstralo en cualquier sede o úsalo para entrar a la biblioteca digital.',
-            cardVisual(state.card) + btn('Ir a mi cuenta', 'data-modal="account"'));
+            cardVisual(state.card) + (pendingAction ? btn('Continuar con mi reserva', 'data-resume') : btn('Ir a mi cuenta', 'data-modal="account"')));
         },
       });
     },
@@ -411,38 +423,72 @@
   const cardVisual = (c) => `<div class="idcard"><img src="images/logo-white.png" alt="BiblioHub"><div><small>Socio/a</small><b>${esc(c.name)}</b></div><div class="idcard__n"><small>N.º de carné</small><span>${esc(c.number)}</span></div></div>`;
   const fmtShort = (d) => new Date(d).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
 
+  const PROG = () => store.get('bh_progress', {});
   function openAccount() {
     if (!state.user) return FORMS.login();
-    const loans = state.loans.map((l, k) => `<li><div><b>${esc(l.title)}</b><span>Devolver antes del ${fmtShort(l.due)}</span></div>${btn('Devolver', `data-return="${k}"`, 'btn--sm btn--outline')}</li>`).join('');
+    const res = state.reserves.map((r) => {
+      const x = bookOf(r.shelf, r.i);
+      return `<li><div><b>${esc(r.title)}</b><span>Código ${esc(r.code)} · Retiro en ${esc(r.sede)} desde el ${fmtShort(r.pick)}</span></div><span class="row-actions">${x && x.b[6] ? btn('Leer', `data-read="${r.shelf}:${r.i}"`, 'btn--sm btn--gold') : ''}${btn('Cancelar', `data-cancel-reserve="${r.code}"`, 'btn--sm btn--outline')}</span></li>`;
+    }).join('');
     const waits = state.waits.map((w, k) => `<li><div><b>${esc(w.title)}</b><span>En lista de espera</span></div>${btn('Quitar', `data-unwait="${k}"`, 'btn--sm btn--outline')}</li>`).join('');
     const rooms = state.rooms.map((r) => `<li><div><b>${esc(r.tipo)} · ${esc(r.sede)}</b><span>${esc(r.fecha)} · ${esc(r.hora)}</span></div></li>`).join('');
+    const prog = PROG();
+    const reading = allBooks().filter((b) => b.pdf && prog[b.slug] > 1).map((b) => `<li><div><b>${esc(b.title)}</b><span>Seguiste en la página ${prog[b.slug]}</span></div>${btn('Continuar', `data-read="${b.shelf}:${b.i}"`, 'btn--sm btn--gold')}</li>`).join('');
+    const mine = allBooks().filter((b) => (store.get('bh_ratings', {}))[b.slug]).map((b) => `<li><div><b>${esc(b.title)}</b><span>Tu calificación: ${'★'.repeat(store.get('bh_ratings', {})[b.slug])}</span></div></li>`).join('');
     openModal(`<p class="eyebrow">Mi cuenta</p>${head(`Hola, ${esc(state.user.name.split(' ')[0])}`, esc(state.user.email))}
       ${state.card ? cardVisual(state.card) : `<div class="callout"><p>Aún no tienes carné digital. Es gratis y lo obtienes al instante.</p>${btn('Obtener mi carné', 'data-modal="card"')}</div>`}
-      <h3 class="modal__sub">Mis préstamos</h3>
-      ${loans ? `<ul class="info-rows info-rows--action">${loans}</ul>` : '<p class="muted">No tienes libros prestados. Explora el catálogo y pide el primero.</p>'}
+      ${reading ? `<h3 class="modal__sub">Continuar leyendo</h3><ul class="info-rows info-rows--action">${reading}</ul>` : ''}
+      <h3 class="modal__sub">Mis reservas</h3>
+      ${res ? `<ul class="info-rows info-rows--action">${res}</ul>` : '<p class="muted">No tienes reservas. Elige un libro y reserva tu copia para retirarla en la sede.</p>'}
       ${waits ? `<h3 class="modal__sub">Lista de espera</h3><ul class="info-rows info-rows--action">${waits}</ul>` : ''}
       ${rooms ? `<h3 class="modal__sub">Mis reservas de salas</h3><ul class="info-rows">${rooms}</ul>` : ''}
+      ${mine ? `<h3 class="modal__sub">Mis calificaciones</h3><ul class="info-rows">${mine}</ul>` : ''}
       <div class="modal__actions">${btn('Buscar libros', 'data-open-search="catalog"')}${btn('Cerrar sesión', 'data-logout', 'btn--outline')}</div>`, { wide: true, focus: false });
   }
   function paintAccount() {
     $$('.js-account-label').forEach((el) => { el.textContent = state.user ? state.user.name.split(' ')[0] : 'Mi cuenta'; });
   }
 
-  /* ---------- Libro: ficha y reserva ---------- */
+  /* ---------- Libro: ficha, reserva y calificación ---------- */
   const place = (shelfIdx, i) => `Sala ${shelfIdx + 1} · Estante ${String.fromCharCode(65 + (i % 6))}${i + 1}`;
+  const MAX_RESERVES = 3;
+  const codeOf = () => 'RS-' + Math.random().toString(36).slice(2, 6).toUpperCase() + Math.floor(100 + Math.random() * 900);
+  const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const longDay = (d) => new Date(d).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+  let viewing = null;                                   // libro abierto en la ficha
+
+  function ratingBlock(b) {
+    const rt = B().ratingOf(b);
+    const sum = rt.n
+      ? `${B().starsHTML(rt.avg)}<b>${B().fmtAvg(rt.avg)}</b><span>${rt.n} ${rt.n === 1 ? 'calificación' : 'calificaciones'}</span>`
+      : '<span>Aún sin calificaciones: sé el primero</span>';
+    return `<div class="rate" id="rate-block">
+      <div class="rate__sum">${sum}</div>
+      <div class="rate__mine"><span>${rt.mine ? 'Tu calificación' : 'Califica este libro'}</span>
+        <div class="rate__stars" role="radiogroup" aria-label="Tu calificación">${[1, 2, 3, 4, 5].map((v) => `<button type="button" class="rstar${v <= rt.mine ? ' on' : ''}" data-rate="${v}" role="radio" aria-checked="${v === rt.mine}" aria-label="${v} ${v === 1 ? 'estrella' : 'estrellas'}">★</button>`).join('')}</div>
+        ${rt.mine ? '<button type="button" class="linkbtn" data-rate="0">Quitar</button>' : ''}</div>
+    </div>`;
+  }
+
   function openBook(shelf, i) {
     const r = bookOf(shelf, i); if (!r) return;
-    const [title, author, pages, copies] = r.b;
-    const canRead = !!r.b[6];
-    const cover = B().coverUrl(r.b);
+    viewing = { shelf, i };
+    const b = r.b;
+    const [title, author, pages, copies] = b;
+    const canRead = !!b[6];
+    const cover = B().coverUrl(b);
     const idx = SHELVES().findIndex((s) => s.id === shelf);
-    const mine = state.loans.find((l) => l.shelf === shelf && l.i === i);
+    const mine = state.reserves.find((x) => x.shelf === shelf && x.i === i);
     const waiting = state.waits.find((w) => w.shelf === shelf && w.i === i);
+    const prog = PROG()[b[5]];
     let action;
-    if (mine) action = btn('Devolver libro', `data-return-book="${shelf}:${i}"`, 'btn--outline');
-    else if (copies > 0) action = btn('Pedir prestado', `data-loan="${shelf}:${i}"`);
+    if (mine) action = btn('Cancelar reserva', `data-cancel-reserve="${mine.code}"`, 'btn--outline');
+    else if (copies > 0) action = btn('Reservar un ejemplar', `data-reserve="${shelf}:${i}"`);
     else if (waiting) action = btn('Salir de la lista de espera', `data-unwait-book="${shelf}:${i}"`, 'btn--outline');
     else action = btn('Unirme a la lista de espera', `data-wait="${shelf}:${i}"`);
+    const status = mine
+      ? `<div class="note note--ok"><b>Reservado · código ${esc(mine.code)}</b><span>Retíralo en ${esc(mine.sede)} desde el ${esc(longDay(mine.pick))} (lo guardamos 3 días).</span></div>`
+      : copies > 0 ? '' : '<div class="note"><b>Sin ejemplares por ahora</b><span>Anótate en la lista y te avisamos cuando vuelva. Mientras tanto puedes leerlo online si está disponible.</span></div>';
     openModal(`<div class="bookview">
         <div class="bookshow${canRead ? ' is-readable' : ''}"${canRead ? ` data-read="${shelf}:${i}" role="button" tabindex="0" aria-label="Leer ${esc(title)} online"` : ''}>
           <div class="bookshow__book">
@@ -456,18 +502,73 @@
         <div class="bookview__info">
           <p class="eyebrow">${esc(r.s.title)}</p>
           <h2 class="modal__title" id="modal-title">${esc(title)}</h2>
-          <p class="muted">por ${esc(author)}</p>
+          <p class="bookview__by">por <b>${esc(author)}</b> · ${b[8] ? `publicado en <b>${b[8]}</b>` : 'año no indicado en la edición'}</p>
+          ${ratingBlock(b)}
           <ul class="facts">
+            <li><span>Autor</span><b>${esc(author)}</b></li>
+            <li><span>Año de publicación</span><b>${b[8] || 's. f.'}</b></li>
             <li><span>Páginas</span><b>${pages}</b></li>
             <li><span>Lectura online</span><b class="${canRead ? 'ok' : ''}">${canRead ? 'Disponible' : 'Próximamente'}</b></li>
-            <li><span>Disponibilidad</span><b class="${copies > 0 ? 'ok' : 'no'}">${mine ? 'Lo tienes prestado' : copies > 0 ? `${copies} ${copies === 1 ? 'copia' : 'copias'}` : 'Prestado'}</b></li>
+            <li><span>Ejemplares</span><b class="${copies > 0 || mine ? 'ok' : 'no'}">${mine ? 'Reservado para ti' : copies > 0 ? `${copies} disponible${copies === 1 ? '' : 's'}` : 'Sin ejemplares'}</b></li>
             <li><span>Ubicación</span><b>${esc(place(idx, i))}</b></li>
           </ul>
-          <p>Forma parte de nuestra colección de <b>${esc(r.s.title.toLowerCase())}</b>. ${mine ? `Devuélvelo antes del ${fmtShort(mine.due)}.` : copies > 0 ? 'Puedes retirarlo en la Sede Central con tu carné.' : 'Te avisaremos cuando vuelva a estar disponible.'}</p>
-          <div class="modal__actions">${canRead ? btn('<svg class="icon"><use href="#i-openbook"/></svg> Leer ahora', `data-read="${shelf}:${i}"`, 'btn--gold') : ''}${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
+          ${status}
+          <div class="modal__actions">${canRead ? btn(`<svg class="icon"><use href="#i-openbook"/></svg> ${prog > 1 ? 'Continuar leyendo' : 'Leer ahora'}`, `data-read="${shelf}:${i}"`, 'btn--gold') : ''}${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
         </div>
       </div>`, { wide: true, focus: false });
   }
+
+  function rate(v) {
+    if (!viewing) return;
+    const r = bookOf(viewing.shelf, viewing.i); if (!r) return;
+    B().setRating(r.b, v);
+    B().refreshBook(viewing.shelf, viewing.i);
+    const el = $('#rate-block');
+    if (el) { const t = document.createElement('div'); t.innerHTML = ratingBlock(r.b); el.replaceWith(t.firstElementChild); }
+    toast(v ? `Calificaste "${r.b[0]}" con ${v} ${v === 1 ? 'estrella' : 'estrellas'}` : 'Quitaste tu calificación');
+  }
+
+  /* reservar: elegir sede y día de retiro */
+  function openReserve(shelf, i) {
+    const r = bookOf(shelf, i); if (!r) return;
+    if (r.b[3] < 1) return openBook(shelf, i);
+    if (state.reserves.length >= MAX_RESERVES) { toast(`Puedes tener hasta ${MAX_RESERVES} reservas activas`, 'info'); return openAccount(); }
+    requireCard(() => {
+      const days = [1, 2, 3].map((n) => { const d = new Date(); d.setDate(d.getDate() + n); return d; });
+      const labels = days.map((d) => longDay(d));
+      openForm({
+        title: 'Reservar un ejemplar', intro: `<b>${esc(r.b[0])}</b> — ${esc(r.b[1])}. Te lo guardamos 3 días en la sede que elijas.`,
+        fields: [
+          { name: 'sede', label: 'Sede de retiro', type: 'select', options: BRANCHES.map((x) => x.name), full: true },
+          { name: 'dia', label: 'Retiro desde', type: 'select', options: labels, full: true },
+        ],
+        submit: 'Confirmar reserva',
+        foot: 'Retira presentando tu carné. Si no pasas en 3 días, el ejemplar vuelve al catálogo.',
+        done: (d) => {
+          const x = bookOf(shelf, i);
+          if (!x || x.b[3] < 1) { toast('Ese ejemplar ya no está disponible', 'info'); openBook(shelf, i); return null; }
+          const pick = iso(days[Math.max(0, labels.indexOf(d.dia))]);
+          const rec = { shelf, i, slug: x.b[5], title: x.b[0], code: codeOf(), sede: d.sede, pick, made: iso(new Date()) };
+          x.b[3] -= 1;
+          state.reserves.push(rec);
+          state.waits = state.waits.filter((w) => !(w.shelf === shelf && w.i === i));
+          save(); B().refreshBook(shelf, i);
+          toast('¡Reserva confirmada!');
+          return done('¡Reserva confirmada!',
+            `<b>${esc(rec.title)}</b><br>Código: <b class="code">${esc(rec.code)}</b><br>Retíralo en <b>${esc(rec.sede)}</b> desde el <b>${esc(longDay(rec.pick))}</b> (te lo guardamos 3 días).`,
+            btn('Añadir al calendario', `data-ics="reserve:${rec.code}"`) + btn('Mis reservas', 'data-modal="account"', 'btn--outline') + (x.b[6] ? btn('Leer ahora', `data-read="${shelf}:${i}"`, 'btn--gold') : ''));
+        },
+      });
+    });
+  }
+  function cancelReserve(code) {
+    const k = state.reserves.findIndex((r) => r.code === code); if (k < 0) return null;
+    const [rec] = state.reserves.splice(k, 1);
+    const x = bookOf(rec.shelf, rec.i); if (x) { x.b[3] += 1; B().refreshBook(rec.shelf, rec.i); }
+    save(); toast('Reserva cancelada');
+    return rec;
+  }
+
   function readBook(shelf, i) {
     const r = bookOf(shelf, i); if (!r || !r.b[6] || !window.BiblioReader) return;
     const [title, author] = r.b;
@@ -480,26 +581,6 @@
     const t = e.target;
     if ((e.key === 'Enter' || e.key === ' ') && t && t.matches && t.matches('.bookshow.is-readable')) { e.preventDefault(); t.click(); }
   });
-  function loan(shelf, i) {
-    const r = bookOf(shelf, i); if (!r || r.b[3] < 1) return;
-    if (!state.user) {
-      toast('Ingresa o crea tu carné para pedir libros', 'info');
-      return FORMS.card();
-    }
-    r.b[3] -= 1;
-    const due = new Date(Date.now() + 21 * 864e5).toISOString();
-    state.loans.push({ shelf, i, title: r.b[0], due });
-    state.waits = state.waits.filter((w) => !(w.shelf === shelf && w.i === i));
-    save(); B().refreshBook(shelf, i);
-    toast(`Reservado: ${r.b[0]}. Devolución: ${fmtShort(due)}`);
-    openBook(shelf, i);
-  }
-  function giveBack(shelf, i) {
-    const k = state.loans.findIndex((l) => l.shelf === shelf && l.i === i); if (k < 0) return;
-    state.loans.splice(k, 1);
-    const r = bookOf(shelf, i); if (r) { r.b[3] += 1; B().refreshBook(shelf, i); }
-    save(); toast('Libro devuelto. ¡Gracias!');
-  }
 
   /* ---------- Búsqueda ---------- */
   const SECTIONS = [
@@ -565,7 +646,7 @@
       box.innerHTML = res.length ? res.map((b) => `
         <li><button type="button" class="result" data-book="${b.shelf}:${b.i}">
           <span class="thumb" style="background-image:url('images/covers/${b.slug}.jpg')"></span>
-          <span class="result__main"><b>${esc(b.title)}</b><small>${esc(b.author)} · ${esc(b.cat)}</small></span>
+          <span class="result__main"><b>${esc(b.title)}</b><small>${esc(b.author)} · ${b.year || 's. f.'} · ${esc(b.cat)}</small></span>
           <span class="result__status ${b.copies > 0 ? 'ok' : 'no'}">${b.copies > 0 ? 'Disponible' : 'Prestado'}</span>
         </button></li>`).join('') : `<li class="empty"><b>Sin resultados</b><p>Prueba con otro título, autor o categoría.</p></li>`;
     } else {
@@ -633,7 +714,10 @@
 
     if ((el = q('[data-ics]'))) {
       e.preventDefault();
-      if (el.dataset.ics === 'room' && window.__lastRoom) {
+      if (el.dataset.ics.startsWith('reserve:')) {
+        const rec = state.reserves.find((x) => x.code === el.dataset.ics.slice(8));
+        if (rec) { const d = rec.pick.replace(/-/g, ''); const n = new Date(rec.pick); n.setDate(n.getDate() + 3); downloadICS('reserva-libro', [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${ymd(n)}`, `SUMMARY:Retirar "${rec.title}" (${rec.code})`, `LOCATION:BiblioHub · ${rec.sede}`, 'DESCRIPTION:Presenta tu carné. Te guardamos el libro 3 días.']); }
+      } else if (el.dataset.ics === 'room' && window.__lastRoom) {
         const r = window.__lastRoom; const [h, m] = r.hora.split(':'); const day = r.fecha.replace(/-/g, '');
         const end = String(Number(h) + 1).padStart(2, '0');
         downloadICS('reserva-bibliohub', [`DTSTART:${day}T${h}${m}00`, `DTEND:${day}T${end}${m}00`, `SUMMARY:${r.tipo} · ${r.sede}`, 'LOCATION:BiblioHub']);
@@ -649,9 +733,15 @@
       e.preventDefault();
       const [s, i] = el.dataset.read.split(':'); readBook(s, Number(i)); return;
     }
-
-    if ((el = q('[data-loan]'))) { const [s, i] = el.dataset.loan.split(':'); loan(s, Number(i)); return; }
-    if ((el = q('[data-return-book]'))) { const [s, i] = el.dataset.returnBook.split(':'); giveBack(s, Number(i)); openBook(s, Number(i)); return; }
+    if ((el = q('[data-rate]'))) { e.preventDefault(); rate(Number(el.dataset.rate)); return; }
+    if ((el = q('[data-reserve]'))) { e.preventDefault(); const [s, i] = el.dataset.reserve.split(':'); openReserve(s, Number(i)); return; }
+    if (q('[data-resume]')) { e.preventDefault(); const f = pendingAction; pendingAction = null; closeModal(); if (f) f(); return; }
+    if ((el = q('[data-cancel-reserve]'))) {
+      e.preventDefault();
+      const rec = cancelReserve(el.dataset.cancelReserve);
+      if (rec && viewing && viewing.shelf === rec.shelf && viewing.i === rec.i && dlg.querySelector('.bookview')) openBook(rec.shelf, rec.i); else openAccount();
+      return;
+    }
     if ((el = q('[data-wait]'))) {
       const [s, i] = el.dataset.wait.split(':'); const r = bookOf(s, Number(i));
       state.waits.push({ shelf: s, i: Number(i), title: r.b[0] }); save(); toast('Te avisaremos cuando esté disponible'); openBook(s, Number(i)); return;
@@ -660,7 +750,6 @@
       const [s, i] = el.dataset.unwaitBook.split(':');
       state.waits = state.waits.filter((w) => !(w.shelf === s && w.i === Number(i))); save(); openBook(s, Number(i)); return;
     }
-    if ((el = q('[data-return]'))) { const l = state.loans[Number(el.dataset.return)]; if (l) { giveBack(l.shelf, l.i); openAccount(); } return; }
     if ((el = q('[data-unwait]'))) { state.waits.splice(Number(el.dataset.unwait), 1); save(); openAccount(); return; }
     if (q('[data-logout]')) { state.user = null; state.card = null; save(); paintAccount(); toast('Sesión cerrada', 'info'); closeModal(); return; }
 
@@ -786,6 +875,6 @@
   /* ---------- Inicio ---------- */
   window.Biblio = Object.assign(window.Biblio || {}, { openSearch, openBranches, toast });
   paintAccount();
-  applyLoans();
+  applyReserves();
   spy();
 })();
