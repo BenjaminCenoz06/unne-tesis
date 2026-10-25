@@ -13,6 +13,10 @@ npx serve .
 
 Abre la dirección que indique (por ejemplo `http://localhost:3000`).
 
+## Publicación
+
+Se publica en **Vercel** (https://biblioteca-unne.vercel.app/): cada `git push` a `main` despliega solo.
+
 ## Estructura
 
 - `index.html`: la página completa
