@@ -68,6 +68,12 @@
   /* ---------- Modal ---------- */
   const dlg = $('#modal');
   const mbody = $('#modal-body');
+  if (typeof dlg.showModal !== 'function') {
+    document.documentElement.classList.add('no-dialog');
+    Object.defineProperty(dlg, 'open', { get() { return this.hasAttribute('open'); } });
+    dlg.showModal = function () { this.setAttribute('open', ''); };
+    dlg.close = function () { this.removeAttribute('open'); this.dispatchEvent(new Event('close')); };
+  }
   function openModal(content, opts = {}) {
     mbody.innerHTML = content;
     dlg.classList.toggle('modal--wide', !!opts.wide);
@@ -268,10 +274,28 @@
         const form = $('form', root);
         form.addEventListener('submit', (e) => {
           e.preventDefault();
-          if (!form.checkValidity()) { form.reportValidity(); return; }
-          const data = Object.fromEntries(new FormData(form).entries());
-          const out = done(data);
-          if (typeof out === 'string') { mbody.innerHTML = out; dlg.querySelector('.modal__panel').scrollTop = 0; }
+          form.querySelectorAll('.field__err').forEach((n) => n.remove());
+          form.querySelectorAll('.is-bad').forEach((n) => n.classList.remove('is-bad'));
+          const bad = [...form.elements].filter((el) => el.name && !el.checkValidity());
+          if (bad.length) {
+            bad.forEach((el) => {
+              const msg = el.validity.valueMissing ? 'Completa este campo.' : el.type === 'email' ? 'Escribe un correo válido (ej.: nombre@correo.com).' : 'Revisa este dato.';
+              el.classList.add('is-bad');
+              const p = document.createElement('small'); p.className = 'field__err'; p.textContent = msg;
+              el.closest('.field').appendChild(p);
+            });
+            bad[0].focus();
+            return;
+          }
+          try {
+            const data = Object.fromEntries(new FormData(form).entries());
+            Object.keys(data).forEach((k) => { if (typeof data[k] === 'string') data[k] = data[k].trim(); });
+            const out = done(data);
+            if (typeof out === 'string') { mbody.innerHTML = out; dlg.querySelector('.modal__panel').scrollTop = 0; }
+          } catch (err) {
+            console.error(err);
+            toast('No pudimos completar la acción. Vuelve a intentarlo.', 'info');
+          }
         });
       },
     });
@@ -362,7 +386,7 @@
         fields: [
           { name: 'nombre', label: 'Nombre y apellido', required: true, full: true, ac: 'name' },
           { name: 'correo', label: 'Correo electrónico', type: 'email', required: true, ac: 'email', value: (state.user && state.user.email) || '' },
-          { name: 'doc', label: 'Documento', required: true, placeholder: 'DNI', ac: 'off' },
+          { name: 'doc', label: 'Documento (opcional)', placeholder: 'DNI', ac: 'off' },
         ],
         submit: 'Crear mi carné',
         foot: 'Demostración: tus datos se guardan solo en este navegador.',
