@@ -21,9 +21,28 @@
   window.addEventListener('keydown', () => { window.__userScrolled = true; }, { once: true });
 
   /* ---------- Almacenamiento local ---------- */
+  // localStorage; si el navegador lo bloquea (modo privado, navegador de WhatsApp/Instagram…)
+  // el carné y la sesión se guardan también en una cookie, y todo lo demás en memoria.
+  const mem = {};
+  const COOKIE_KEYS = ['bh_card', 'bh_user'];
+  const cookie = {
+    get(k) { const m = document.cookie.match(new RegExp('(?:^|; )' + k + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; },
+    set(k, v) { document.cookie = k + '=' + encodeURIComponent(v) + '; max-age=31536000; path=/; SameSite=Lax'; },
+  };
   const store = {
-    get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? d : v; } catch { return d; } },
-    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* sin almacenamiento */ } },
+    get(k, d) {
+      let raw = null;
+      try { raw = localStorage.getItem(k); } catch { /* bloqueado */ }
+      if (raw === null && COOKIE_KEYS.includes(k)) { try { raw = cookie.get(k); } catch { /* sin cookies */ } }
+      if (raw !== null) { try { const v = JSON.parse(raw); if (v !== null && v !== undefined) return v; } catch { /* dato dañado */ } }
+      return k in mem && mem[k] !== null ? mem[k] : d;
+    },
+    set(k, v) {
+      mem[k] = v;
+      const s = JSON.stringify(v);
+      try { localStorage.setItem(k, s); } catch { /* sin almacenamiento */ }
+      if (COOKIE_KEYS.includes(k)) { try { cookie.set(k, s); } catch { /* sin cookies */ } }
+    },
   };
   const state = {
     user: store.get('bh_user', null),
