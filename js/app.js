@@ -556,7 +556,7 @@
             <li><span>Ubicación</span><b>${esc(place(idx, i))}</b></li>
           </ul>
           ${status}
-          <div class="modal__actions">${canRead ? btn(`<svg class="icon"><use href="#i-openbook"/></svg> ${prog > 1 ? 'Continuar leyendo' : 'Leer ahora'}`, `data-read="${shelf}:${i}"`, 'btn--gold') : ''}${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
+          <div class="modal__actions">${btn(`<svg class="icon"><use href="#i-openbook"/></svg> ${prog > 1 ? 'Continuar leyendo' : 'Leer ahora'}`, canRead ? `data-read="${shelf}:${i}"` : `data-soon="${shelf}:${i}"`, 'btn--gold')}${action}${btn('Más de ' + esc(r.s.title), `data-open-search="catalog" data-cat="${esc(r.s.title)}"`, 'btn--outline')}</div>
         </div>
       </div>`, { wide: true, focus: false });
   }
@@ -775,6 +775,12 @@
     if ((el = q('[data-read]'))) {
       e.preventDefault();
       const [s, i] = el.dataset.read.split(':'); readBook(s, Number(i)); return;
+    }
+    if ((el = q('[data-soon]'))) {
+      e.preventDefault();
+      const [s, i] = el.dataset.soon.split(':'); const r = bookOf(s, Number(i)); if (!r) return;
+      openModal(`<div class="success"><span class="success__icon"><svg viewBox="0 0 24 24"><path d="M4 5h7a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H4zM20 5h-7a3 3 0 0 0-3 3v11a2 2 0 0 1 2-2h8z" fill="#fff"/></svg></span>${head('Lo estamos digitalizando', `<b>${esc(r.b[0])}</b> todavía no tiene versión online. Mientras la preparamos, puedes reservar el ejemplar físico y retirarlo en la sede.`)}<div class="modal__actions">${btn('Volver al libro', `data-book="${s}:${i}"`)}${btn('Cerrar', 'data-close', 'btn--outline')}</div></div>`, { focus: false });
+      return;
     }
     if ((el = q('[data-rate]'))) { e.preventDefault(); rate(Number(el.dataset.rate)); return; }
     if ((el = q('[data-reserve]'))) { e.preventDefault(); const [s, i] = el.dataset.reserve.split(':'); openReserve(s, Number(i)); return; }

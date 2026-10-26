@@ -207,6 +207,14 @@ const mount = document.getElementById('shelves');
 SHELVES.forEach((s) => mount.appendChild(buildShelf(s)));
 
 /* API pública para js/app.js */
+/* Si se sube libros/<slug>.pdf, el libro pasa a "Leer ahora" solo, sin tocar el código */
+SHELVES.forEach((sh) => sh.books.forEach((b, i) => {
+  if (b[6]) return;
+  fetch(`libros/${b[5]}.pdf`, { method: 'HEAD' })
+    .then((r) => { if (r.ok && /pdf/i.test(r.headers.get('content-type') || '')) { b[6] = 1; if (sh._refresh) sh._refresh(i); } })
+    .catch(() => {});
+}));
+
 window.Biblio = Object.assign(window.Biblio || {}, {
   SHELVES, P, bookVars: vars, coverUrl, ratingOf, setRating, starsHTML, fmtAvg,
   refreshBook(shelfId, i) { const s = SHELVES.find((x) => x.id === shelfId); if (s && s._refresh) s._refresh(i); },
