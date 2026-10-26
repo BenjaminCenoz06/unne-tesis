@@ -22,7 +22,7 @@
 
   /* ---------- Almacenamiento local ---------- */
   // localStorage; si el navegador lo bloquea (modo privado, navegador de WhatsApp/Instagram…)
-  // el carné y la sesión se guardan también en una cookie, y todo lo demás en memoria.
+  // el carnet y la sesión se guardan también en una cookie, y todo lo demás en memoria.
   const mem = {};
   const COOKIE_KEYS = ['bh_card', 'bh_user'];
   const cookie = {
@@ -129,7 +129,7 @@
         '<b>Anota y comparte.</b> Subraya frases y cuéntalas: refuerza la memoria y la conversación.',
       ]) + `<div class="modal__actions">${btn('Ver el catálogo', 'data-open-search="catalog"')}${go('Ver eventos', '#eventos')}</div>`,
 
-    borrow: () => head('Más para pedir prestado', 'Además de libros, tu carné te da acceso a objetos y experiencias.') +
+    borrow: () => head('Más para pedir prestado', 'Además de libros, tu carnet te da acceso a objetos y experiencias.') +
       tiles([
         ['Paquetes de libros', 'Selecciones temáticas para llevar, armadas por nuestros bibliotecarios.'],
         ['Pases a museos', 'Entradas gratuitas a museos y centros culturales de la ciudad.'],
@@ -137,9 +137,9 @@
         ['Kits de observación de aves', 'Binoculares y guías de campo para salir a mirar.'],
         ['Instrumentos', 'Ukeleles y otros instrumentos para aprender sin comprar.'],
         ['Biblioteca de fanzines', 'Publicaciones independientes de la escena local.'],
-      ]) + `<p class="modal__note">Requieren carné vigente. Consulta disponibilidad en tu sede.</p><div class="modal__actions">${btn('Obtener mi carné', 'data-modal="card"')}${btn('Consultar disponibilidad', 'data-modal="help"', 'btn--outline')}</div>`,
+      ]) + `<p class="modal__note">Requieren carnet vigente. Consulta disponibilidad en tu sede.</p><div class="modal__actions">${btn('Obtener mi carnet', 'data-modal="card"')}${btn('Consultar disponibilidad', 'data-modal="help"', 'btn--outline')}</div>`,
 
-    digital: () => head('Biblioteca digital', 'Recursos disponibles las 24 horas con tu carné, desde cualquier dispositivo.') +
+    digital: () => head('Biblioteca digital', 'Recursos disponibles las 24 horas con tu carnet, desde cualquier dispositivo.') +
       tiles([
         ['Libros electrónicos', 'Miles de títulos para leer en el celular, la tablet o la computadora.'],
         ['Audiolibros', 'Escucha novelas y ensayos mientras viajas o cocinas.'],
@@ -147,7 +147,7 @@
         ['Cómics y novelas gráficas', 'Colecciones para jóvenes y adultos.'],
         ['Cursos en línea', 'Idiomas, oficios y preparación para exámenes.'],
         ['Música, cine y video', 'Streaming sin publicidad ni costo adicional.'],
-      ]) + `<div class="modal__actions">${btn('Obtener mi carné', 'data-modal="card"')}${btn('Buscar en el catálogo', 'data-open-search="catalog"', 'btn--outline')}</div>`,
+      ]) + `<div class="modal__actions">${btn('Obtener mi carnet', 'data-modal="card"')}${btn('Buscar en el catálogo', 'data-open-search="catalog"', 'btn--outline')}</div>`,
 
     guides: () => head('Guías de investigación', 'Rutas de búsqueda preparadas por nuestro equipo de referencia.') +
       tiles([
@@ -180,18 +180,18 @@
       list(['Duración: 60 minutos', 'Grupos de hasta 15 personas', 'Sábados a las 11:00 y 16:00', 'Gratuito, con reserva previa']) +
       `<div class="modal__actions">${btn('Reservar mi visita', 'data-modal="contact" data-subject="Reserva de visita guiada"')}</div>`,
 
-    computers: () => head('Computadoras y tecnología', 'Usa equipos en la sala o llévalos prestados con tu carné.') +
+    computers: () => head('Computadoras y tecnología', 'Usa equipos en la sala o llévalos prestados con tu carnet.') +
       tiles([
         ['Computadoras en sala', 'Sesiones de 2 horas, con internet y software de oficina.'],
-        ['Notebooks en préstamo', 'Para usar dentro de la biblioteca, con carné vigente.'],
+        ['Notebooks en préstamo', 'Para usar dentro de la biblioteca, con carnet vigente.'],
         ['Ayuda con la tecnología', 'Sesiones individuales para correo, trámites y celulares.'],
         ['Laboratorio de medios', 'Edición de audio y video, impresión 3D y digitalización.'],
       ]) + `<div class="modal__actions">${btn('Reservar un equipo', 'data-modal="rooms"')}${btn('Pedir ayuda', 'data-modal="help" data-subject="Ayuda con la tecnología"', 'btn--outline')}</div>`,
 
     print: () => head('Impresión y copias', 'Imprime documentos desde tu dispositivo o desde nuestras computadoras.') +
       `<ul class="info-rows"><li><b>Blanco y negro</b><span>$50 por hoja</span></li><li><b>Color</b><span>$150 por hoja</span></li><li><b>Escaneo</b><span>Gratis</span></li></ul>` +
-      list(['Envía el archivo al correo de impresión de tu sede.', 'Retíralo en el mostrador con tu carné.', 'Primeras 10 hojas por mes sin costo para socios.']) +
-      `<div class="modal__actions">${btn('Obtener mi carné', 'data-modal="card"')}${btn('Consultar', 'data-modal="help" data-subject="Impresión"', 'btn--outline')}</div>`,
+      list(['Envía el archivo al correo de impresión de tu sede.', 'Retíralo en el mostrador con tu carnet.', 'Primeras 10 hojas por mes sin costo para socios.']) +
+      `<div class="modal__actions">${btn('Obtener mi carnet', 'data-modal="card"')}${btn('Consultar', 'data-modal="help" data-subject="Impresión"', 'btn--outline')}</div>`,
 
     careers: () => head('Empleos y carreras', 'Súmate al equipo que acerca el conocimiento a la comunidad.') +
       `<ul class="info-rows info-rows--action">${[
@@ -233,7 +233,7 @@
 
   function openBranches(zip) {
     let rows = BRANCHES.map((b, i) => ({ b, d: null, i }));
-    let intro = 'Elige la sede que mejor te quede. Todas atienden con tu mismo carné.';
+    let intro = 'Elige la sede que mejor te quede. Todas atienden con tu mismo carnet.';
     let title = 'Sedes y horarios';
     if (zip) {
       // Distancia aproximada (demostrativa) calculada a partir del código postal
@@ -326,7 +326,7 @@
   const requireCard = (fn) => {
     if (state.card) return fn();
     pendingAction = fn;
-    toast('Para reservar necesitas tu carné (es gratis)', 'info');
+    toast('Para reservar necesitas tu carnet (es gratis)', 'info');
     FORMS.card();
   };
 
@@ -336,7 +336,7 @@
       fields: [
         { name: 'nombre', label: 'Nombre', required: true, ac: 'name' },
         { name: 'correo', label: 'Correo electrónico', type: 'email', required: true, ac: 'email' },
-        { name: 'tema', label: 'Tema', type: 'select', options: ['Catálogo y libros', 'Mi cuenta y carné', 'Investigación', 'Tecnología', 'Otro'], full: true, value: o.subject && 'Otro' },
+        { name: 'tema', label: 'Tema', type: 'select', options: ['Catálogo y libros', 'Mi cuenta y carnet', 'Investigación', 'Tecnología', 'Otro'], full: true, value: o.subject && 'Otro' },
         { name: 'mensaje', label: 'Tu consulta', type: 'textarea', required: true, full: true, value: o.subject ? `Consulta: ${o.subject}\n\n` : '' },
       ],
       submit: 'Enviar consulta',
@@ -401,33 +401,33 @@
     card: () => {
       if (state.card) return openAccount();
       openForm({
-        title: 'Obtener mi carné', intro: 'Es gratis y lo obtienes al instante. Con él puedes pedir libros, reservar salas y usar la biblioteca digital.',
+        title: 'Obtener mi carnet', intro: 'Es gratis y lo obtienes al instante. Con él puedes pedir libros, reservar salas y usar la biblioteca digital.',
         fields: [
           { name: 'nombre', label: 'Nombre y apellido', required: true, full: true, ac: 'name' },
           { name: 'correo', label: 'Correo electrónico', type: 'email', required: true, ac: 'email', value: (state.user && state.user.email) || '' },
           { name: 'doc', label: 'Documento (opcional)', placeholder: 'DNI', ac: 'off' },
         ],
-        submit: 'Crear mi carné',
+        submit: 'Crear mi carnet',
         foot: 'Demostración: tus datos se guardan solo en este navegador.',
         done: (d) => {
           const number = 'BH-' + String(Math.floor(10000000 + Math.random() * 89999999));
           state.card = { name: d.nombre, number, since: new Date().toISOString().slice(0, 10) };
           state.user = { name: d.nombre, email: d.correo };
           save(); paintAccount();
-          toast('¡Tu carné está listo!');
-          return done(`¡Bienvenido/a, ${esc(d.nombre.split(' ')[0])}!`, 'Este es tu carné digital. Muéstralo en cualquier sede o úsalo para entrar a la biblioteca digital.',
+          toast('¡Tu carnet está listo!');
+          return done(`¡Bienvenido/a, ${esc(d.nombre.split(' ')[0])}!`, 'Este es tu carnet digital. Muéstralo en cualquier sede o úsalo para entrar a la biblioteca digital.',
             cardVisual(state.card) + (pendingAction ? btn('Continuar con mi reserva', 'data-resume') : btn('Ir a mi cuenta', 'data-modal="account"')));
         },
       });
     },
     login: () => openForm({
-      title: 'Acceder a mi cuenta', intro: 'Ingresa con tu correo para ver tus reservas y tu carné.',
+      title: 'Acceder a mi cuenta', intro: 'Ingresa con tu correo para ver tus reservas y tu carnet.',
       fields: [
         { name: 'correo', label: 'Correo electrónico', type: 'email', required: true, full: true, ac: 'email' },
         { name: 'clave', label: 'Contraseña', type: 'password', required: true, full: true, ac: 'current-password' },
       ],
       submit: 'Ingresar',
-      foot: '¿No tienes carné? <button type="button" class="linkbtn" data-modal="card">Obtén uno gratis</button>. Demostración: la sesión se guarda solo en este navegador.',
+      foot: '¿No tienes carnet? <button type="button" class="linkbtn" data-modal="card">Obtén uno gratis</button>. Demostración: la sesión se guarda solo en este navegador.',
       done: (d) => {
         const base = d.correo.split('@')[0].replace(/[._-]+/g, ' ');
         state.user = { name: base.replace(/\b\w/g, (c) => c.toUpperCase()), email: d.correo };
@@ -445,7 +445,7 @@
     { img: 3, name: 'Roxy', role: 'Colecciones y archivo', bio: 'Archivista y especialista en preservación. Cuida las colecciones especiales y coordina la digitalización de fotografías, documentos y publicaciones históricas.', focus: ['Colecciones especiales', 'Digitalización', 'Guías de investigación'] },
     { img: 4, name: 'Paula', role: 'Programas culturales', bio: 'Gestora cultural y mediadora de lectura. Diseña clubes de lectura, ciclos de autores y las celebraciones del calendario literario durante todo el año.', focus: ['Clubes de lectura', 'Ciclos y talleres', 'Primera infancia'] },
     { img: 1, name: 'Dante', role: 'Biblioteca digital', bio: 'Especialista en recursos digitales y tecnología. Administra los libros electrónicos, audiolibros y cursos en línea, y enseña a los socios a sacarles el máximo provecho desde cualquier dispositivo.', focus: ['Libros electrónicos', 'Cursos en línea', 'Alfabetización digital'] },
-    { img: 5, name: 'Benjamin Cenoz', role: 'Atención y comunidad', bio: 'Referencista y responsable de la atención al público. Te ayuda con tu carné, tus préstamos y cualquier trámite, en persona o por correo.', focus: ['Carné y préstamos', 'Ayuda con la tecnología', 'Accesibilidad'] },
+    { img: 5, name: 'Benjamin Cenoz', role: 'Atención y comunidad', bio: 'Referencista y responsable de la atención al público. Te ayuda con tu carnet, tus préstamos y cualquier trámite, en persona o por correo.', focus: ['Carnet y préstamos', 'Ayuda con la tecnología', 'Accesibilidad'] },
   ];
   function openPerson(i) {
     const p = PEOPLE[i]; if (!p) return;
@@ -463,7 +463,7 @@
   }
 
   /* ---------- Cuenta ---------- */
-  const cardVisual = (c) => `<div class="idcard"><img src="images/logo-white.png" alt="BiblioHub"><div><small>Socio/a</small><b>${esc(c.name)}</b></div><div class="idcard__n"><small>N.º de carné</small><span>${esc(c.number)}</span></div></div>`;
+  const cardVisual = (c) => `<div class="idcard"><img src="images/logo-white.png" alt="BiblioHub"><div><small>Socio/a</small><b>${esc(c.name)}</b></div><div class="idcard__n"><small>N.º de carnet</small><span>${esc(c.number)}</span></div></div>`;
   const fmtShort = (d) => new Date(d).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
 
   const PROG = () => store.get('bh_progress', {});
@@ -479,7 +479,7 @@
     const reading = allBooks().filter((b) => b.pdf && prog[b.slug] > 1).map((b) => `<li><div><b>${esc(b.title)}</b><span>Seguiste en la página ${prog[b.slug]}</span></div>${btn('Continuar', `data-read="${b.shelf}:${b.i}"`, 'btn--sm btn--gold')}</li>`).join('');
     const mine = allBooks().filter((b) => (store.get('bh_ratings', {}))[b.slug]).map((b) => `<li><div><b>${esc(b.title)}</b><span>Tu calificación: ${'★'.repeat(store.get('bh_ratings', {})[b.slug])}</span></div></li>`).join('');
     openModal(`<p class="eyebrow">Mi cuenta</p>${head(`Hola, ${esc(state.user.name.split(' ')[0])}`, esc(state.user.email))}
-      ${state.card ? cardVisual(state.card) : `<div class="callout"><p>Aún no tienes carné digital. Es gratis y lo obtienes al instante.</p>${btn('Obtener mi carné', 'data-modal="card"')}</div>`}
+      ${state.card ? cardVisual(state.card) : `<div class="callout"><p>Aún no tienes carnet digital. Es gratis y lo obtienes al instante.</p>${btn('Obtener mi carnet', 'data-modal="card"')}</div>`}
       ${reading ? `<h3 class="modal__sub">Continuar leyendo</h3><ul class="info-rows info-rows--action">${reading}</ul>` : ''}
       <h3 class="modal__sub">Mis reservas</h3>
       ${res ? `<ul class="info-rows info-rows--action">${res}</ul>` : '<p class="muted">No tienes reservas. Elige un libro y reserva tu copia para retirarla en la sede.</p>'}
@@ -586,7 +586,7 @@
           { name: 'dia', label: 'Retiro desde', type: 'select', options: labels, full: true },
         ],
         submit: 'Confirmar reserva',
-        foot: 'Retira presentando tu carné. Si no pasas en 3 días, el ejemplar vuelve al catálogo.',
+        foot: 'Retira presentando tu carnet. Si no pasas en 3 días, el ejemplar vuelve al catálogo.',
         done: (d) => {
           const x = bookOf(shelf, i);
           if (!x || x.b[3] < 1) { toast('Ese ejemplar ya no está disponible', 'info'); openBook(shelf, i); return null; }
@@ -635,7 +635,7 @@
     ['Infantil y juvenil', '#infantil', 'Carrusel de lecturas para chicos y jóvenes'],
     ['Eventos', '#eventos', 'Fechas para celebrar la literatura'],
     ['Sedes', '#sedes', 'Encuentra tu sucursal y horarios'],
-    ['Servicios', '#servicios', 'Motivos para leer, salas y carné'],
+    ['Servicios', '#servicios', 'Motivos para leer, salas y carnet'],
     ['Investigación', '#investigacion', 'Colecciones, archivos y guías'],
     ['Comunidad', '#comunidad', 'Fotos y videos de la biblioteca'],
     ['Opiniones', '#opiniones', 'Lo que dicen nuestros lectores'],
@@ -647,7 +647,7 @@
     ['Hábitos de lectura', 'habits'], ['Biblioteca digital', 'digital'], ['Guías de investigación', 'guides'], ['Genealogía y archivos', 'genealogy'],
     ['Cierres por feriados', 'closures'], ['Visitas guiadas', 'tours'], ['Computadoras y tecnología', 'computers'], ['Impresión', 'print'],
     ['Empleos y carreras', 'careers'], ['Voluntariado', 'volunteer'], ['Apoya a la biblioteca', 'support'], ['Políticas y reglas', 'policies'],
-    ['Reservar una sala', 'rooms'], ['Obtener un carné', 'card'], ['Pregunte a un bibliotecario', 'help'], ['Contáctenos', 'contact'], ['Más para pedir prestado', 'borrow'], ['Recibir novedades', 'newsletter'],
+    ['Reservar una sala', 'rooms'], ['Obtener un carnet', 'card'], ['Pregunte a un bibliotecario', 'help'], ['Contáctenos', 'contact'], ['Más para pedir prestado', 'borrow'], ['Recibir novedades', 'newsletter'],
   ];
   function siteIndex() {
     const items = [];
@@ -759,7 +759,7 @@
       e.preventDefault();
       if (el.dataset.ics.startsWith('reserve:')) {
         const rec = state.reserves.find((x) => x.code === el.dataset.ics.slice(8));
-        if (rec) { const d = rec.pick.replace(/-/g, ''); const n = new Date(rec.pick); n.setDate(n.getDate() + 3); downloadICS('reserva-libro', [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${ymd(n)}`, `SUMMARY:Retirar "${rec.title}" (${rec.code})`, `LOCATION:BiblioHub · ${rec.sede}`, 'DESCRIPTION:Presenta tu carné. Te guardamos el libro 3 días.']); }
+        if (rec) { const d = rec.pick.replace(/-/g, ''); const n = new Date(rec.pick); n.setDate(n.getDate() + 3); downloadICS('reserva-libro', [`DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${ymd(n)}`, `SUMMARY:Retirar "${rec.title}" (${rec.code})`, `LOCATION:BiblioHub · ${rec.sede}`, 'DESCRIPTION:Presenta tu carnet. Te guardamos el libro 3 días.']); }
       } else if (el.dataset.ics === 'room' && window.__lastRoom) {
         const r = window.__lastRoom; const [h, m] = r.hora.split(':'); const day = r.fecha.replace(/-/g, '');
         const end = String(Number(h) + 1).padStart(2, '0');

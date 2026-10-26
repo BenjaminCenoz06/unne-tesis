@@ -192,7 +192,7 @@ function buildShelf(shelf) {
 
 /* ---------- Cinta de anuncios ---------- */
 const TICKER = [
-  'Carné gratuito para toda la comunidad',
+  'Carnet gratuito para toda la comunidad',
   'Hasta 5 libros por 21 días',
   'Renovación en línea sin costo',
   'Reserve su libro desde casa',

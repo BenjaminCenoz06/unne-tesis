@@ -19,7 +19,7 @@
     [
       T('L', 220, 'Escritores', 'Archivo · Sala de escritura', 'Un lugar para escribir sin distracciones, con todo a mano.', 200),
       I('Sias_Library_Interior.jpg', 'Interior de una biblioteca luminosa', 145),
-      T('J', 20, 'Jóvenes', 'Préstamo digital · Cómics', 'Leo en el celular con mi carné, sin pagar nada.', 150),
+      T('J', 20, 'Jóvenes', 'Préstamo digital · Cómics', 'Leo en el celular con mi carnet, sin pagar nada.', 150),
     ],
     [
       I('Zevulun_Hammer_library_books_3_2019.jpg', 'Libros en los estantes de una biblioteca', 145),

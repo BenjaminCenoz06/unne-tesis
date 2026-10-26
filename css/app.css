@@ -142,7 +142,7 @@ html.modal-open { overflow: hidden; }
 .success .modal__actions { justify-content: center; }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } }
 
-/* Carné digital */
+/* Carnet digital */
 .idcard {
   position: relative;
   display: grid;
