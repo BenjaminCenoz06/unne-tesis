@@ -152,3 +152,6 @@
   .shelfx__arrow { width: 38px; height: 38px; }
   .shelfx__bottom { padding: 0 8px; gap: 4px; }
 }
+
+/* varias categorías seguidas: una línea fina las separa */
+.shelfx + .shelfx { border-top: 1px solid rgba(15, 26, 19, .18); }

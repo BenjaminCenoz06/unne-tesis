@@ -204,9 +204,9 @@ document.getElementById('ticker-track').innerHTML = tickerItems + tickerItems;
 
 /* ---------- Montaje ---------- */
 const mount = document.getElementById('shelves');
-// "Novela y ficción" usa el estante 3D (js/shelf3d.js); las demás categorías, el carrusel de siempre
+// Todas las categorías usan el estante 3D (js/shelf3d.js); el carrusel plano queda como respaldo
 SHELVES.forEach((s) => {
-  const hero = s.id === 'ficcion' && window.BiblioHero
+  const hero = window.BiblioHero
     ? window.BiblioHero.build(s, { esc, coverUrl, ratingOf, starsHTML, fmtAvg })
     : null;
   mount.appendChild(hero || buildShelf(s));

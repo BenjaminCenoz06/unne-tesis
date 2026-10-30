@@ -15,6 +15,33 @@
     'el-tunel': ['#c4b48f', '#1a160d'],
     'la-sombra-del-viento': ['#8f2a22', '#f3ead2'],
     'los-detectives-salvajes': ['#c9441f', '#fbefd8'],
+    // Ciencia y tecnología
+    'breve-historia-del-tiempo': ['#1b2236', '#f3ead2'],
+    'cosmos': ['#2a0f0e', '#f3ead2'],
+    'el-gen-egoista': ['#b53a2c', '#fbefd8'],
+    'una-breve-historia-de-casi-todo': ['#171c33', '#f3ead2'],
+    'el-origen-de-las-especies': ['#2f5a43', '#f3ead2'],
+    'astrofisica-para-gente-con-prisa': ['#12213f', '#f1dfa6'],
+    'el-universo-elegante': ['#0c1030', '#f3ead2'],
+    'la-doble-helice': ['#2d2b4f', '#f3ead2'],
+    // Historia y sociedad
+    'sapiens': ['#a42a2a', '#fbefd8'],
+    'armas-germenes-y-acero': ['#7d1d1b', '#f3ead2'],
+    'las-venas-abiertas-de-america-latina': ['#8e1c18', '#f3ead2'],
+    'spqr': ['#d2bd86', '#1a160d'],
+    'los-origenes-del-totalitarismo': ['#7b7d7a', '#f6f1e2'],
+    'la-primera-guerra-mundial': ['#b5381f', '#fbefd8'],
+    'history-of-india': ['#0d4a2f', '#f3ead2'],
+    'el-mediterraneo': ['#d6c27a', '#1a160d'],
+    // Infantil y juvenil
+    'el-principito': ['#e0a82e', '#1a160d'],
+    'matilda': ['#e0457b', '#fff4e4'],
+    'alicia-en-el-pais-de-las-maravillas': ['#3a2f55', '#f3ead2'],
+    'harry-potter-y-la-piedra-filosofal': ['#a32323', '#f6e3a8'],
+    'charlie-y-la-fabrica-de-chocolate': ['#7a3b1f', '#fbefd8'],
+    'peter-pan': ['#2d3f8f', '#f3ead2'],
+    'el-jardin-secreto': ['#3f7a4a', '#f3ead2'],
+    'mujercitas': ['#6f68a8', '#f6f1e2'],
   };
   const smooth = (x) => x * x * (3 - 2 * x);
   const EASE = 'cubic-bezier(.2,.8,.2,1)';
@@ -27,7 +54,8 @@
     // orden cronológico, como un estante ordenado por año
     const items = shelf.books.map((b, i) => ({ b, i, year: b[8] || 0 })).sort((a, c) => a.year - c.year);
     const N = items.length, COPIES = 3, M = N * COPIES;
-    const start = Math.max(0, items.findIndex((x) => x.b[5] === 'cien-anos-de-soledad'));
+    // arranca en el libro más calificado de la categoría
+    const start = items.reduce((best, x, pos) => ((x.b[9] ? x.b[9][1] : 0) > (items[best].b[9] ? items[best].b[9][1] : 0) ? pos : best), 0);
 
     /* ---------- estructura ---------- */
     const section = document.createElement('section');
@@ -103,7 +131,8 @@
         let fs = Math.max(11, ws * 0.3);
         t.title.style.fontSize = fs + 'px';
         let guard = 0;
-        while (t.title.scrollHeight > t.title.clientHeight + 1 && fs > 9 && guard++ < 30) { fs -= 0.6; t.title.style.fontSize = fs + 'px'; }
+        // el título va en vertical y, si es largo, pasa a varias columnas: se achica hasta que entre
+        while ((t.title.scrollHeight > t.title.clientHeight + 1 || t.title.scrollWidth > t.title.clientWidth + 1) && fs > 8 && guard++ < 40) { fs -= 0.5; t.title.style.fontSize = fs + 'px'; }
       });
     }
 
