@@ -204,7 +204,13 @@ document.getElementById('ticker-track').innerHTML = tickerItems + tickerItems;
 
 /* ---------- Montaje ---------- */
 const mount = document.getElementById('shelves');
-SHELVES.forEach((s) => mount.appendChild(buildShelf(s)));
+// "Novela y ficción" usa el estante 3D (js/shelf3d.js); las demás categorías, el carrusel de siempre
+SHELVES.forEach((s) => {
+  const hero = s.id === 'ficcion' && window.BiblioHero
+    ? window.BiblioHero.build(s, { esc, coverUrl, ratingOf, starsHTML, fmtAvg })
+    : null;
+  mount.appendChild(hero || buildShelf(s));
+});
 
 /* API pública para js/app.js */
 /* Si se sube libros/<slug>.pdf, el libro pasa a "Leer ahora" solo, sin tocar el código */
