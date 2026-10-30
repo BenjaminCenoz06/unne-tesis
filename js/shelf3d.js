@@ -27,8 +27,6 @@
     // orden cronológico, como un estante ordenado por año
     const items = shelf.books.map((b, i) => ({ b, i, year: b[8] || 0 })).sort((a, c) => a.year - c.year);
     const N = items.length, COPIES = 3, M = N * COPIES;
-    const decades = [...new Set(items.map((x) => Math.floor(x.year / 10) * 10))];
-    const decadeOf = (pos) => Math.floor(items[pos].year / 10) * 10;
     const start = Math.max(0, items.findIndex((x) => x.b[5] === 'cien-anos-de-soledad'));
 
     /* ---------- estructura ---------- */
@@ -46,11 +44,6 @@
         </div>
         <a class="shelfx__more" href="#catalogo" data-open-search="catalog" data-cat="${esc(shelf.title)}">Ver toda la categoría <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </header>
-      <nav class="shelfx__tabs" aria-label="Décadas">
-        <span class="shelfx__ind" aria-hidden="true"></span>
-        <button type="button" data-dec="all">Todos</button>
-        ${decades.map((d) => `<button type="button" data-dec="${d}">${d}s</button>`).join('')}
-      </nav>
       <div class="shelfx__shelf" role="group" aria-label="Estante de ${esc(shelf.title)}">
         <i class="shelfx__probe" aria-hidden="true"></i>
         <div class="shelfx__stage"></div>
@@ -73,8 +66,6 @@
     const probe = $('.shelfx__probe');
     const play = $('.shelfx__play');
     const cursor = $('.shelfx__cursor');
-    const tabsEl = $('.shelfx__tabs');
-    const ind = $('.shelfx__ind');
 
     /* ---------- libros (3 copias para que el estante sea infinito) ---------- */
     const tapes = [];
@@ -114,7 +105,6 @@
         let guard = 0;
         while (t.title.scrollHeight > t.title.clientHeight + 1 && fs > 9 && guard++ < 30) { fs -= 0.6; t.title.style.fontSize = fs + 'px'; }
       });
-      paintTab();
     }
 
     /* ---------- estado ---------- */
@@ -130,21 +120,6 @@
       if (delta < -N / 2) delta += N;
       return delta;
     };
-
-    /* ---------- pestañas de décadas ---------- */
-    function paintTab() {
-      const dec = String(decadeOf(active));
-      const btns = [...tabsEl.querySelectorAll('button')];
-      const cur = btns.find((b) => b.dataset.dec === dec) || btns[0];
-      btns.forEach((b) => b.classList.toggle('on', b === cur));
-      ind.style.width = cur.offsetWidth + 'px';
-      ind.style.transform = `translateX(${cur.offsetLeft}px)`;
-    }
-    tabsEl.addEventListener('click', (e) => {
-      const btn = e.target.closest('button'); if (!btn) return;
-      const pos = btn.dataset.dec === 'all' ? 0 : items.findIndex((x) => Math.floor(x.year / 10) * 10 === Number(btn.dataset.dec));
-      if (pos >= 0) Tt = Math.round(Tt) + shortest(pos);
-    });
 
     /* ---------- leyenda con deslizamiento enmascarado ---------- */
     const lines = { t: $('.shelfx__line--t'), s: $('.shelfx__line--s'), m: $('.shelfx__line--m') };
@@ -174,7 +149,6 @@
       slideIn(lines.m, metaHTML(it), dir, animate);
       play.dataset.book = `${shelf.id}:${it.i}`;
       play.setAttribute('aria-label', `Abrir ${it.b[0]}`);
-      paintTab();
     }
     function refreshMeta() { const sp = lines.m.lastElementChild; if (sp) sp.innerHTML = metaHTML(items[active]); }
 
