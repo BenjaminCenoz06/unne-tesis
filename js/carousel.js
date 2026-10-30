@@ -202,24 +202,69 @@ const tickerItems = [...TICKER, ...TICKER].map((t) =>
 ).join('');
 document.getElementById('ticker-track').innerHTML = tickerItems + tickerItems;
 
+/* ---------- Contenido publicado en la base (Supabase) ---------- */
+// Solo claves públicas: la seguridad la dan las reglas RLS (el público únicamente puede leer lo publicado).
+// Si la base no responde, el sitio sigue funcionando con los datos de arriba.
+const CLOUD = { url: 'https://lqjehkbkorsqnkegzdna.supabase.co', key: 'sb_publishable_CzakNo7X3nKT4CRxFWO6nA_u4g_OGz6' };
+const PAL_KEYS = Object.keys(P);
+
+const cloudGet = (path) => {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 2000);
+  return fetch(`${CLOUD.url}/rest/v1/${path}`, { headers: { apikey: CLOUD.key }, signal: ctl.signal })
+    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .finally(() => clearTimeout(t));
+};
+
+function applyCloud() {
+  return Promise.all([
+    cloudGet('categories?select=id,title,position&status=eq.published&order=position'),
+    cloudGet('books?select=slug,title,author,pages,copies,year,category_id,pdf_path,ol_rating,ol_votes,position&status=eq.published&order=position,title'),
+  ]).then(([cats, books]) => {
+    if (!Array.isArray(cats) || !Array.isArray(books) || !cats.length || !books.length) return;
+    // la paleta de color y la página de inicio de cada libro conocido se conservan
+    const known = new Map();
+    SHELVES.forEach((s) => s.books.forEach((b) => known.set(b[5], b)));
+    const next = cats.map((c) => ({
+      id: c.id,
+      title: c.title,
+      books: books.filter((b) => b.category_id === c.id).map((b, n) => {
+        const o = known.get(b.slug);
+        return [
+          b.title, b.author, b.pages || 0, b.copies == null ? 0 : b.copies,
+          o ? o[4] : PAL_KEYS[(n + c.id.length) % PAL_KEYS.length],
+          b.slug, b.pdf_path ? 1 : 0, o ? o[7] : 1, b.year || null,
+          b.ol_rating ? [Number(b.ol_rating), b.ol_votes || 0] : null,
+        ];
+      }),
+    })).filter((s) => s.books.length);
+    // se reemplaza en el mismo arreglo para que js/app.js (que lo lee al usarlo) vea lo nuevo
+    if (next.length) SHELVES.splice(0, SHELVES.length, ...next);
+  });
+}
+
 /* ---------- Montaje ---------- */
 const mount = document.getElementById('shelves');
-// Todas las categorías usan el estante 3D (js/shelf3d.js); el carrusel plano queda como respaldo
-SHELVES.forEach((s) => {
-  const hero = window.BiblioHero
-    ? window.BiblioHero.build(s, { esc, coverUrl, ratingOf, starsHTML, fmtAvg })
-    : null;
-  mount.appendChild(hero || buildShelf(s));
-});
+function mountShelves() {
+  // Todas las categorías usan el estante 3D (js/shelf3d.js); el carrusel plano queda como respaldo
+  SHELVES.forEach((s) => {
+    const hero = window.BiblioHero
+      ? window.BiblioHero.build(s, { esc, coverUrl, ratingOf, starsHTML, fmtAvg })
+      : null;
+    mount.appendChild(hero || buildShelf(s));
+  });
+
+  /* Si se sube libros/<slug>.pdf, el libro pasa a "Leer ahora" solo, sin tocar el código */
+  SHELVES.forEach((sh) => sh.books.forEach((b, i) => {
+    if (b[6]) return;
+    fetch(`libros/${b[5]}.pdf`, { method: 'HEAD' })
+      .then((r) => { if (r.ok && /pdf/i.test(r.headers.get('content-type') || '')) { b[6] = 1; if (sh._refresh) sh._refresh(i); } })
+      .catch(() => {});
+  }));
+}
+applyCloud().catch(() => {}).then(mountShelves);
 
 /* API pública para js/app.js */
-/* Si se sube libros/<slug>.pdf, el libro pasa a "Leer ahora" solo, sin tocar el código */
-SHELVES.forEach((sh) => sh.books.forEach((b, i) => {
-  if (b[6]) return;
-  fetch(`libros/${b[5]}.pdf`, { method: 'HEAD' })
-    .then((r) => { if (r.ok && /pdf/i.test(r.headers.get('content-type') || '')) { b[6] = 1; if (sh._refresh) sh._refresh(i); } })
-    .catch(() => {});
-}));
 
 window.Biblio = Object.assign(window.Biblio || {}, {
   SHELVES, P, bookVars: vars, coverUrl, ratingOf, setRating, starsHTML, fmtAvg,
