@@ -127,6 +127,8 @@
 
   async function open(opts) {
     const { slug, title, author, cover, start = 1 } = opts;
+    // PDF subido desde el panel (link propio) o, si no hay, libros/<slug>.pdf
+    const pdfUrl = opts.pdf || `libros/${slug}.pdf`;
     const my = ++token;
     build();
     root.hidden = false;
@@ -135,7 +137,7 @@
     $('#reader-title').textContent = title;
     $('#reader-author').textContent = author ? 'de ' + author : '';
     $('#reader-count').textContent = '';
-    $('#reader-dl').href = `libros/${slug}.pdf`;
+    $('#reader-dl').href = pdfUrl;
     $('#reader-splash').src = cover || '';
     $('#reader-msg').textContent = 'Abriendo el libro…';
     $('#reader-bar').style.width = '4%';
@@ -155,7 +157,7 @@
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = VENDOR + 'pdf.worker.min.js';
 
       const task = window.pdfjsLib.getDocument({
-        url: `libros/${slug}.pdf`,
+        url: pdfUrl,
         rangeChunkSize: 524288,
         disableAutoFetch: true,
         cMapUrl: VENDOR + 'cmaps/', cMapPacked: true,
@@ -288,7 +290,7 @@
       if (my !== token) return;
       console.error(err);
       $('#reader-loading').classList.add('is-error');
-      $('#reader-msg').innerHTML = `No pudimos abrir este libro.<br><a href="libros/${esc(slug)}.pdf" target="_blank" rel="noopener">Abrir el PDF en una pestaña nueva</a>`;
+      $('#reader-msg').innerHTML = `No pudimos abrir este libro.<br><a href="${esc(pdfUrl)}" target="_blank" rel="noopener">Abrir el PDF en una pestaña nueva</a>`;
     }
   }
 

@@ -93,7 +93,7 @@ const starsHTML = (avg) => `<span class="stars" style="--v:${avg.toFixed(2)}" ro
 function setRating(b, v) { if (v) myRatings[b[5]] = v; else delete myRatings[b[5]]; store.set('bh_ratings', myRatings); }
 const vars = (key) => { const [a, b, t] = P[key]; return `--a:${a};--b:${b};--t:${t}`; };
 
-const coverUrl = (b) => `images/covers/${b[5]}.jpg`;
+const coverUrl = (b) => b[10] || `images/covers/${b[5]}.jpg`;
 function slideInner(b, shelfId, i) {
   const [title, author, pages, copies] = b;
   const rt = ratingOf(b);
@@ -203,24 +203,17 @@ const tickerItems = [...TICKER, ...TICKER].map((t) =>
 document.getElementById('ticker-track').innerHTML = tickerItems + tickerItems;
 
 /* ---------- Contenido publicado en la base (Supabase) ---------- */
-// Solo claves públicas: la seguridad la dan las reglas RLS (el público únicamente puede leer lo publicado).
-// Si la base no responde, el sitio sigue funcionando con los datos de arriba.
-const CLOUD = { url: 'https://lqjehkbkorsqnkegzdna.supabase.co', key: 'sb_publishable_CzakNo7X3nKT4CRxFWO6nA_u4g_OGz6' };
+// Los datos los trae js/cms.js (solo lo publicado). Si la base no responde, el sitio sigue con los datos de arriba.
 const PAL_KEYS = Object.keys(P);
-
-const cloudGet = (path) => {
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), 2000);
-  return fetch(`${CLOUD.url}/rest/v1/${path}`, { headers: { apikey: CLOUD.key }, signal: ctl.signal })
-    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .finally(() => clearTimeout(t));
-};
+// Portada/PDF subidos desde el panel: solo se aceptan links https o rutas propias del sitio
+const safePath = (p) => (typeof p === 'string' && (/^https:\/\/[^\s"'<>]+$/.test(p) || /^(images|libros)\/[\w\-./]+$/.test(p)) && !p.includes('..') ? p : null);
 
 function applyCloud() {
-  return Promise.all([
-    cloudGet('categories?select=id,title,position&status=eq.published&order=position'),
-    cloudGet('books?select=slug,title,author,pages,copies,year,category_id,pdf_path,ol_rating,ol_votes,position&status=eq.published&order=position,title'),
-  ]).then(([cats, books]) => {
+  const C = window.BiblioCloud;
+  if (!C) return Promise.resolve();
+  return C.ready.then(() => {
+    const cats = C.data.categories;
+    const books = C.data.books;
     if (!Array.isArray(cats) || !Array.isArray(books) || !cats.length || !books.length) return;
     // la paleta de color y la página de inicio de cada libro conocido se conservan
     const known = new Map();
@@ -235,6 +228,7 @@ function applyCloud() {
           o ? o[4] : PAL_KEYS[(n + c.id.length) % PAL_KEYS.length],
           b.slug, b.pdf_path ? 1 : 0, o ? o[7] : 1, b.year || null,
           b.ol_rating ? [Number(b.ol_rating), b.ol_votes || 0] : null,
+          safePath(b.cover_path), safePath(b.pdf_path),
         ];
       }),
     })).filter((s) => s.books.length);

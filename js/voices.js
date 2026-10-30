@@ -1,4 +1,4 @@
-(() => {
+(window.BiblioCloud ? window.BiblioCloud.ready : Promise.resolve()).then(() => {
   const photo = (f) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f)}?width=640`;
 
   // t: tarjeta de texto · i: tarjeta de imagen
@@ -36,6 +36,8 @@
   const GO = { 'Estudiantes': '#servicios', 'Familias': '#eventos', 'Docentes': '#catalogo', 'Adultos mayores': '#eventos', 'Escritores': '#investigacion', 'Jóvenes': '#catalogo', 'Investigadores': '#investigacion', 'Comunidad': '#comunidad', 'Trabajadores': '#servicios', 'Nuevos lectores': '#servicios' };
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+  const dest = (c) => c.link || GO[c.title] || '#servicios';
+  const goAttr = (c) => (dest(c)[0] === '#' ? `data-go="${esc(dest(c))}"` : 'target="_blank" rel="noopener noreferrer"');
   const cardHTML = (c) => c.k === 'i'
     ? `<figure class="vcard vcard--img" style="--h:${c.h}px"><img src="${c.src}" alt="${esc(c.alt)}" decoding="async"></figure>`
     : `
@@ -48,8 +50,22 @@
           </div>
         </header>
         <blockquote><span aria-hidden="true">”</span>${esc(c.quote)}</blockquote>
-        <a class="vcard__more" href="${GO[c.title] || '#servicios'}" data-go="${GO[c.title] || '#servicios'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Conocer más</a>
+        <a class="vcard__more" href="${esc(dest(c))}" ${goAttr(c)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>Conocer más</a>
       </article>`;
+
+  // Testimonios publicados desde el panel: reemplazan a los textos y conservan el lugar de las fotos
+  const CT = window.BiblioCloud && window.BiblioCloud.data.testimonials;
+  if (Array.isArray(CT) && CT.length) {
+    const cards = CT.map((t) => ({
+      k: 't', initial: String(t.initial || '?').slice(0, 2), hue: Number(t.hue) || 0, title: t.title, tags: t.tags || '', quote: t.quote,
+      h: Number(t.height) || 190, link: /^(#[\w-]+|https:\/\/[^\s"'<>]+)$/.test(t.link || '') ? t.link : '',
+    }));
+    let n = 0;
+    COLUMNS.forEach((col, ci) => {
+      COLUMNS[ci] = col.reduce((acc, c) => { if (c.k === 'i') acc.push(c); else if (n < cards.length) acc.push(cards[n++]); return acc; }, []);
+    });
+    while (n < cards.length) { COLUMNS[n % COLUMNS.length].push(cards[n]); n++; }
+  }
 
   const wall = document.getElementById('voices-wall');
   COLUMNS.forEach((col, i) => {
@@ -65,4 +81,4 @@
     [...track.children].slice(col.length).forEach((n) => n.setAttribute('aria-hidden', 'true'));
     wall.appendChild(el);
   });
-})();
+});

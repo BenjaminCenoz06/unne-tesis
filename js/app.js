@@ -3,12 +3,16 @@
    del navegador): navegación, búsqueda, reservas, formularios,
    cuenta, accesibilidad y más.
    ========================================================= */
-(() => {
+// Espera (máx. 2,5 s) a que js/cms.js traiga el contenido publicado; si la base no responde, usa el de siempre
+(window.BiblioCloud ? window.BiblioCloud.ready : Promise.resolve()).then(() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const norm = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  const EMAIL = 'contacto@bibliohub.org';
+  const CLOUD = window.BiblioCloud;
+  const CD = (CLOUD && CLOUD.data) || {};
+  const cloudMail = CLOUD ? CLOUD.setting('contact_email', '') : '';
+  const EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/.test(cloudMail) ? cloudMail : 'contacto@bibliohub.org';
   const html = document.documentElement;
 
   /* Al recargar, siempre se empieza arriba (sin #hash ni scroll recordado) */
@@ -61,7 +65,7 @@
   const B = () => window.Biblio;
   const SHELVES = () => (B() && B().SHELVES) || [];
   const bookOf = (shelf, i) => { const s = SHELVES().find((x) => x.id === shelf); return s ? { s, b: s.books[i], i } : null; };
-  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4], slug: b[5], pdf: b[6], year: b[8] })));
+  const allBooks = () => SHELVES().flatMap((s) => s.books.map((b, i) => ({ shelf: s.id, cat: s.title, i, title: b[0], author: b[1], pages: b[2], copies: b[3], pal: b[4], slug: b[5], pdf: b[6], year: b[8], cover: B().coverUrl(b) })));
 
   // Las reservas guardadas descuentan copias disponibles
   function applyReserves() {
@@ -224,6 +228,15 @@
     { name: 'Sede Norte', addr: 'Calle Los Olivos 450', hours: 'Lun–Vie 10–19 · Sáb 10–15', tel: '(+54-11) 4000-0002', tag: 'Sección infantil · Computadoras' },
     { name: 'Sede Sur', addr: 'Av. del Parque 980', hours: 'Lun–Vie 10–19 · Sáb 10–14', tel: '(+54-11) 4000-0003', tag: 'Talleres · Sala de estudio' },
   ];
+  // Sedes publicadas desde el panel (también en la lista del pie de página)
+  if (Array.isArray(CD.branches) && CD.branches.length) {
+    BRANCHES.splice(0, BRANCHES.length, ...CD.branches.map((b) => ({ name: b.name, addr: b.addr || '', hours: b.hours || '', tel: b.tel || '', tag: b.tag || '' })));
+    const sfp = $('#sf-p3 ul');
+    if (sfp) {
+      sfp.innerHTML = BRANCHES.map((b) => `<li><a href="#contacto" data-modal="branches"><b>${esc(b.name)}</b><span>${esc(b.addr)}</span></a></li>`).join('')
+        + '<li><a class="sf__how" href="#sedes" data-go="#sedes">Cómo llegar →</a></li>';
+    }
+  }
   const mapUrl = (b) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.name + ' ' + b.addr)}`;
   const branchCard = (b, extra = '') => `
     <li class="branch-card">
@@ -254,6 +267,31 @@
     { title: 'Día Mundial del Libro y del Derecho de Autor', m: 3, d: 23, cat: 'Novela y ficción', text: 'La UNESCO eligió esta fecha por Cervantes, Shakespeare y el Inca Garcilaso de la Vega, fallecidos en 1616. En la biblioteca: feria de intercambio de libros y charlas con autores.' },
     { title: 'Día Internacional de la Alfabetización', m: 8, d: 8, cat: 'Historia y sociedad', text: 'Proclamado por la UNESCO para recordar que leer y escribir son derechos humanos. En la biblioteca: tutorías gratuitas y jornadas de lectura compartida.' },
   ];
+  // Efemérides publicadas desde el panel: se actualizan los datos y las tarjetas de la sección
+  const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const FEATURE_ART = [
+    ['art--dots', '--c1:#f0dfae;--c2:#26a047;--c3:#00482a', 'grad--pink', 'plus'],
+    ['art--rays', '--c1:#0a6b34;--c2:#168a3e;--c3:#f0dfae', 'grad--blue', 'sun'],
+    ['art--rings', '--c1:#00482a;--c2:#d9ab4a;--c3:#fff', 'grad--aqua', 'x'],
+    ['art--zig', '--c1:#e1f2e6;--c2:#8fd0a2;--c3:#d9ab4a', 'grad--sun', 'plus'],
+    ['art--stripes', '--c1:#26a047;--c2:#03271a;--c3:#f0dfae', 'grad--lilac', 'sun'],
+  ];
+  if (Array.isArray(CD.events) && CD.events.length) {
+    EVENTS.splice(0, EVENTS.length, ...CD.events.map((e) => ({ title: e.title, m: e.month - 1, d: e.day, cat: e.category || '', text: e.body || e.summary || '', sum: e.summary || e.body || '' })));
+    const host = $('#eventos .container');
+    if (host) {
+      host.querySelectorAll('article.feature').forEach((n) => n.remove());
+      EVENTS.forEach((e, i) => {
+        const [art, vars, grad, icon] = FEATURE_ART[i % FEATURE_ART.length];
+        const a = document.createElement('article');
+        a.className = `feature feature--${i % 2 ? 'b' : 'a'}`;
+        a.innerHTML = `<div class="feature__art ${art}" style="${vars}"><span class="date"><b>${Number(e.d)}</b><i>${MESES[e.m] || ''}</i></span></div>`
+          + `<div class="feature__body ${grad}"><svg class="feature__icon icon--${icon}"><use href="#i-${icon}"/></svg>`
+          + `<h3><a href="#eventos" data-event="${i}">${esc(e.title)} <svg><use href="#i-arrow"/></svg></a></h3><p>${esc(e.sum)}</p></div>`;
+        host.appendChild(a);
+      });
+    }
+  }
   const nextDate = (ev) => { const now = new Date(); let d = new Date(now.getFullYear(), ev.m, ev.d); if (d < new Date(now.getFullYear(), now.getMonth(), now.getDate())) d = new Date(now.getFullYear() + 1, ev.m, ev.d); return d; };
   const fmtDate = (d) => d.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
@@ -447,11 +485,25 @@
     { img: 1, name: 'Dante', role: 'Biblioteca digital', bio: 'Especialista en recursos digitales y tecnología. Administra los libros electrónicos, audiolibros y cursos en línea, y enseña a los socios a sacarles el máximo provecho desde cualquier dispositivo.', focus: ['Libros electrónicos', 'Cursos en línea', 'Alfabetización digital'] },
     { img: 5, name: 'Benjamin Cenoz', role: 'Atención y comunidad', bio: 'Referencista y responsable de la atención al público. Te ayuda con tu carnet, tus préstamos y cualquier trámite, en persona o por correo.', focus: ['Carnet y préstamos', 'Ayuda con la tecnología', 'Accesibilidad'] },
   ];
+  // Equipo publicado desde el panel: foto propia (https) o la de images/team/<n>.png
+  const teamImg = (p) => (/^https:\/\/[^\s"'<>]+$/.test(p.photo || '') ? p.photo : `images/team/${p.img}.png`);
+  if (Array.isArray(CD.team) && CD.team.length) {
+    PEOPLE.splice(0, PEOPLE.length, ...CD.team.map((t) => ({ img: t.img || 1, photo: t.photo_url || '', name: t.name, role: t.role, bio: t.bio || '', focus: t.focus || [] })));
+    const grid = $('.team__grid');
+    if (grid) {
+      grid.innerHTML = PEOPLE.map((p) => {
+        const ini = p.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+        return `<li><div class="person" role="group" aria-label="${esc(p.name)}"><span class="person__stage"><span class="person__panel" aria-hidden="true"><b>${esc(ini)}</b></span>`
+          + `<img class="person__img" src="${esc(teamImg(p))}" alt="" width="640" height="800" loading="lazy"></span>`
+          + `<span class="person__info"><small>${esc(p.role)}</small><strong>${esc(p.name)}</strong></span></div></li>`;
+      }).join('');
+    }
+  }
   function openPerson(i) {
     const p = PEOPLE[i]; if (!p) return;
     const initials = p.name.replace(/^(Lic\.|Dr\.|Dra\.)\s*/, '').split(' ').map((w) => w[0]).slice(0, 2).join('');
     openModal(`<div class="personview">
-        <div class="personview__avatar"><img src="images/team/${p.img}.png" alt="${esc(p.name)}"></div>
+        <div class="personview__avatar"><img src="${esc(teamImg(p))}" alt="${esc(p.name)}"></div>
         <div>
           <p class="eyebrow">${esc(p.role)}</p>
           <h2 class="modal__title" id="modal-title">${esc(p.name)}</h2>
@@ -618,7 +670,7 @@
     closeAllSafe();
     closeModal();
     window.__readerReturn = () => openBook(shelf, i);
-    window.BiblioReader.open({ slug: r.b[5], title, author, cover: B().coverUrl(r.b), start: r.b[7] || 1 });
+    window.BiblioReader.open({ slug: r.b[5], title, author, cover: B().coverUrl(r.b), start: r.b[7] || 1, pdf: r.b[11] || undefined });
   }
   document.addEventListener('keydown', (e) => {
     const t = e.target;
@@ -688,7 +740,7 @@
     if (SEARCH.scope === 'catalog') {
       box.innerHTML = res.length ? res.map((b) => `
         <li><button type="button" class="result" data-book="${b.shelf}:${b.i}">
-          <span class="thumb" style="background-image:url('images/covers/${b.slug}.jpg')"></span>
+          <span class="thumb" style="background-image:url('${esc(b.cover)}')"></span>
           <span class="result__main"><b>${esc(b.title)}</b><small>${esc(b.author)} · ${b.year || 's. f.'} · ${esc(b.cat)}</small></span>
           <span class="result__status ${b.copies > 0 ? 'ok' : 'no'}">${b.copies > 0 ? 'Disponible' : 'Prestado'}</span>
         </button></li>`).join('') : `<li class="empty"><b>Sin resultados</b><p>Prueba con otro título, autor o categoría.</p></li>`;
@@ -926,4 +978,4 @@
   paintAccount();
   applyReserves();
   spy();
-})();
+});
