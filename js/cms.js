@@ -108,11 +108,7 @@
     }
     const wa = str(s.contact_whatsapp).replace(/\D/g, '');
     if (/^\d{8,15}$/.test(wa)) $$('a[href^="https://wa.me/"]').forEach((a) => { a.href = a.href.replace(/wa\.me\/\d+/, `wa.me/${wa}`); });
-    const waMsg = str(s.wa_message);
-    const fl = $('.wa-float');
-    if (fl && waMsg) fl.href = `${fl.href.split('?')[0]}?text=${encodeURIComponent(waMsg)}`;
-    setText($('.wa-float__label'), str(s.wa_label));
-    if (fl && str(s.wa_label)) fl.setAttribute('aria-label', str(s.wa_label));
+    // el texto del botón del chat, el mensaje de WhatsApp y la bienvenida los aplica js/chat.js
     setText($('.sf__panel a[href^="https://wa.me/"]'), str(s.contact_whatsapp_label));
     const phones = $$('.sf__panel a[href^="tel:"]');
     [s.contact_phone1, s.contact_phone2].forEach((p, i) => {
