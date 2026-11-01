@@ -47,6 +47,7 @@
     voice: '<svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/></svg>',
     phones: '<svg viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="7" rx="1.8"/><rect x="16.5" y="14" width="4.5" height="7" rx="1.8"/></svg>',
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    chev: '<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
   };
 
   const B = () => window.Biblio;
@@ -102,20 +103,20 @@
     <div class="audio__bg" aria-hidden="true"><i class="audio__glow audio__glow--a"></i><i class="audio__glow audio__glow--b"></i></div>
     <div class="container container--narrow audio__inner">
       <header class="audio__head">
-        <p class="audio__kicker"><span>${ICON.phones}</span>Audiolibros</p>
-        <h2 class="audio__title" id="audio-title">Escucha tus libros,<br><em>donde estés</em></h2>
-        <p class="audio__lead">Elige un libro de la biblioteca y deja que te lo lea. Sigues justo donde lo dejaste, ajustas la velocidad y puedes seguir con otra tarea.</p>
-        <ul class="audio__stats" id="ab-stats"></ul>
+        <div>
+          <p class="audio__kicker"><span>${ICON.phones}</span>Audiolibros</p>
+          <h2 class="audio__title" id="audio-title">Escucha tus libros, <em>donde estés</em></h2>
+        </div>
+        <p class="audio__lead" id="ab-lead">Elige un libro, pulsa ▶ y sigue donde lo dejaste.</p>
       </header>
       <div class="abp" id="ab-player" aria-label="Reproductor de audiolibros"></div>
       <div class="audio__lib">
         <div class="audio__bar">
-          <h3 class="audio__sub">La colección</h3>
           <div class="audio__filters" id="ab-filters" role="group" aria-label="Filtrar por categoría"></div>
+          <div class="abnav" aria-hidden="true"><button type="button" class="abnav__b" data-dir="-1" tabindex="-1">${ICON.chev}</button><button type="button" class="abnav__b" data-dir="1" tabindex="-1">${ICON.chev}</button></div>
         </div>
-        <div id="ab-continue"></div>
-        <ul class="abgrid" id="ab-grid"></ul>
-        <p class="audio__fine">Narración automática con las voces de tu dispositivo: su calidad depende de las voces instaladas (en Edge, Chrome, Android e iPhone suelen ser muy buenas). El texto se toma de los libros de la biblioteca; no se descargan archivos de audio.</p>
+        <div class="abwrap is-start" id="ab-wrap"><ul class="abgrid" id="ab-grid"></ul></div>
+        <p class="audio__fine">Narración automática con las voces de tu dispositivo · no se descargan archivos de audio.</p>
       </div>
     </div>`;
 
@@ -129,6 +130,16 @@
   document.body.appendChild(mini);
 
   const P = $('#ab-player', root);
+
+  /* ---------- carrusel de la colección (flechas en PC, deslizar en el celular) ---------- */
+  const wrap = $('#ab-wrap', root), grid = $('#ab-grid', root);
+  const updateEdges = () => {
+    wrap.classList.toggle('is-start', grid.scrollLeft < 8);
+    wrap.classList.toggle('is-end', grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 8);
+  };
+  grid.addEventListener('scroll', updateEdges, { passive: true });
+  $$('.abnav__b', root).forEach((b) => b.addEventListener('click', () => grid.scrollBy({ left: Number(b.dataset.dir) * grid.clientWidth * 0.85, behavior: reduce ? 'auto' : 'smooth' })));
+  addEventListener('resize', updateEdges);
 
   /* ---------- voces ---------- */
   function voiceScore(v, lang) {
@@ -360,7 +371,7 @@
           <div class="abp__menuwrap"><button type="button" class="abp__tool" data-menu="rate" aria-haspopup="true" aria-expanded="false">${ICON.speed}<span id="ab-rate">${String(S.rate).replace('.', ',')}×</span></button><div class="abp__menu" id="ab-menu-rate" role="menu" hidden></div></div>
           <div class="abp__menuwrap"><button type="button" class="abp__tool" data-menu="voice" aria-haspopup="true" aria-expanded="false">${ICON.voice}<span id="ab-voice">Voz</span></button><div class="abp__menu abp__menu--wide" id="ab-menu-voice" role="menu" hidden></div></div>
           <div class="abp__menuwrap"><button type="button" class="abp__tool" data-menu="timer" aria-haspopup="true" aria-expanded="false">${ICON.moon}<span id="ab-timer">Dormir</span></button><div class="abp__menu" id="ab-menu-timer" role="menu" hidden></div></div>
-          <button type="button" class="abp__tool abp__tool--ghost" data-a="read">${ICON.book}<span>Abrir el libro</span></button>
+          <button type="button" class="abp__tool abp__tool--ghost" data-a="read" aria-label="Abrir el libro en el lector">${ICON.book}<span class="lbl-l">Abrir el libro</span><span class="lbl-s">Libro</span></button>
         </div>
         <p class="abp__note" id="ab-note" role="status"></p>
       </div>`;
@@ -603,8 +614,9 @@
     $$('.abc', root).forEach((c) => c.classList.toggle('is-current', c.dataset.slug === b.slug));
     store.set('bh_audio', { ...saved(), __last: b.slug });
     if (opts.autoplay) {
-      const y = P.getBoundingClientRect().top + scrollY - 90;
-      scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+      // solo se desplaza la página si el reproductor no se ve completo
+      const r = P.getBoundingClientRect();
+      if (r.top < 70 || r.bottom > innerHeight - 10) scrollTo({ top: r.top + scrollY - 84, behavior: reduce ? 'auto' : 'smooth' });
       play();
     }
   }
@@ -614,7 +626,7 @@
   function paintStats() {
     const ok = BOOKS.filter((b) => b.ok);
     const mins = ok.reduce((a, b) => a + b.minutes, 0);
-    $('#ab-stats', root).innerHTML = `<li><b>${ok.length}</b><span>libros para escuchar</span></li><li><b>${Math.round(mins / 60)} h</b><span>de lectura en total</span></li><li><b>0,75–2×</b><span>velocidad a tu ritmo</span></li><li><b>ES · EN</b><span>voces en cada idioma</span></li>`;
+    $('#ab-lead', root).innerHTML = `<b>${ok.length} libros</b> para escuchar · ${Math.round(mins / 60)} h de lectura · español e inglés<span class="audio__hint">. Elige uno, pulsa ▶ y sigue donde lo dejaste.</span>`;
   }
   function paintFilters() {
     const cats = ['Todos', ...new Set(BOOKS.map((b) => b.cat))];
@@ -634,13 +646,14 @@
       </span></button></li>`;
   }
   function paintGrid() {
-    const list = BOOKS.filter((b) => filter === 'Todos' || b.cat === filter);
-    $('#ab-grid', root).innerHTML = list.map(card).join('') || '<li class="audio__empty">No hay libros en esta categoría.</li>';
     const all = saved();
-    const cont = BOOKS.filter((b) => b.ok && all[b.slug] && all[b.slug].page > 1).sort((a, b) => all[b.slug].t - all[a.slug].t).slice(0, 4);
-    $('#ab-continue', root).innerHTML = cont.length
-      ? `<div class="abcont"><h4>Continuar escuchando</h4><div>${cont.map((b) => `<button type="button" class="abcont__item" data-slug="${esc(b.slug)}"><img src="${esc(b.cover)}" alt="" width="44" height="62"><span><b>${esc(b.title)}</b><small>Página ${all[b.slug].page} de ${b.pages}</small></span></button>`).join('')}</div></div>`
-      : '';
+    const started = (b) => (all[b.slug] && all[b.slug].page > 1 ? all[b.slug].t : 0);
+    // los libros ya empezados van primero (el más reciente al inicio); no hace falta una fila aparte
+    const list = BOOKS.filter((b) => filter === 'Todos' || b.cat === filter).sort((a, b) => started(b) - started(a));
+    const keep = grid.scrollLeft;                              // al repintar no se pierde el lugar del carrusel
+    grid.innerHTML = list.map(card).join('') || '<li class="audio__empty">No hay libros en esta categoría.</li>';
+    grid.scrollLeft = keep;
+    updateEdges();
   }
 
   /* ---------- eventos ---------- */
@@ -688,7 +701,7 @@
   P.addEventListener('change', (e) => { if (e.target.id === 'ab-range' && S.book && S.book.ok) { S.started = true; goPage(Number(e.target.value)); } });
 
   root.addEventListener('click', (e) => {
-    const c = e.target.closest('.abc, .abcont__item');
+    const c = e.target.closest('.abc');
     if (c) {
       const b = BOOKS.find((x) => x.slug === c.dataset.slug); if (!b) return;
       if (!b.ok) { select(b); return; }
@@ -696,7 +709,7 @@
       return;
     }
     const f = e.target.closest('.abchip');
-    if (f) { filter = f.dataset.cat; paintFilters(); paintGrid(); }
+    if (f) { filter = f.dataset.cat; paintFilters(); grid.scrollLeft = 0; paintGrid(); }
   });
 
   mini.addEventListener('click', (e) => {
