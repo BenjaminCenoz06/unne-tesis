@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/reader.css">
   <link rel="stylesheet" href="css/shelf3d.css?v=39">
+  <link rel="stylesheet" href="css/audiobooks.css?v=2">
   <link rel="stylesheet" href="css/chat.css?v=1">
 </head>
 <body>
@@ -269,6 +270,9 @@
 
     <!-- Carruseles por categoría (generados por js/carousel.js) -->
     <div id="shelves"></div>
+
+    <!-- Audiolibros: lectura en voz alta de los libros de la biblioteca (js/audiobooks.js) -->
+    <section class="audio" id="audiolibros" aria-labelledby="audio-title"></section>
 
     <!-- Eventos: fechas importantes de la literatura -->
     <section class="spotlight" id="eventos" aria-labelledby="spot-title">
@@ -589,6 +593,7 @@
           <div class="sf__panel" id="sf-p1"><ul>
             <li><a href="#inicio" data-go="#inicio">Inicio</a></li>
             <li><a href="#catalogo" data-go="#catalogo">Catálogo</a></li>
+            <li><a href="#audiolibros" data-go="#audiolibros">Audiolibros</a></li>
             <li><a href="#sedes" data-go="#sedes">Sedes</a></li>
             <li><a href="#eventos" data-go="#eventos">Eventos</a></li>
             <li><a href="#servicios" data-go="#servicios">Servicios</a></li>
@@ -659,13 +664,14 @@
   <script src="js/cms.js?v=2"></script>
   <script src="js/shelf3d.js?v=39"></script>
   <script src="js/carousel.js?v=40"></script>
-  <script src="js/header.js?v=39"></script>
+  <script src="js/header.js?v=40"></script>
   <script src="js/effects.js?v=39"></script>
   <script src="js/collage.js?v=39"></script>
   <script src="js/voices.js?v=40"></script>
   <script src="js/footer.js?v=39"></script>
   <script src="js/reader.js?v=40"></script>
   <script src="js/app.js?v=40"></script>
-  <script src="js/chat.js?v=4"></script>
+  <script src="js/audiobooks.js?v=6"></script>
+  <script src="js/chat.js?v=5"></script>
 </body>
 </html>

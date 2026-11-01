@@ -113,6 +113,11 @@
       text: () => 'Leer en línea es muy fácil:<ol><li>Elige un libro en el <b>catálogo</b>.</li><li>Toca el libro del centro del estante (o su lomo).</li><li>Pulsa <b>«Leer ahora»</b>.</li></ol>Se abre como un libro de verdad: pasa las páginas con las flechas, con un clic o arrastrando una esquina. <b>Tu progreso se guarda solo.</b>',
       acts: [go('Ir al catálogo', '#catalogo'), search('Buscar un libro')], chips: ['problemas', 'calificar'],
     },
+    audio: {
+      chip: 'Escuchar un libro', keys: ['audiolibro', 'audiolibros', 'audio libro', 'audio libros', 'escuchar', 'narrado', 'narracion', 'que me lean', 'que lo lean', 'oir un libro', 'leer en voz alta', 'voz alta'],
+      text: () => 'En la sección <b>Audiolibros</b> puedes <b>escuchar</b> los libros: eliges uno, pulsas ▶ y una voz te lo lee en español o inglés, según el libro.<br><br>Puedes cambiar la <b>velocidad</b> (0,75× a 2×), elegir la <b>voz</b>, programar un temporizador para dormir y retomar justo donde lo dejaste.',
+      acts: [go('Ir a Audiolibros', '#audiolibros')], chips: ['leer', 'problemas'],
+    },
     reservar: {
       chip: 'Reservar un libro', keys: ['reserv', 'apartar', 'guardar un libro', 'retirar', 'retiro', 'lista de espera', 'quiero un libro', 'pedir un libro'],
       text: () => 'Puedes reservar <b>hasta 3 libros</b>. Eliges la sede y la fecha de retiro y recibes un <b>código (RS-…)</b>.<br><br>Te guardamos el ejemplar <b>3 días</b>: retíralo presentando tu carnet. Si un libro no tiene ejemplares, puedes sumarte a la <b>lista de espera</b>.<br><br>Para reservar necesitas tener tu carnet o iniciar sesión.',

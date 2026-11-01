@@ -9,8 +9,8 @@ const NAV = [
     label: 'Leer y pedir prestado', to: '#catalogo',
     feature: { title: 'Catálogo de la biblioteca', text: 'Busca libros por título, autor o categoría.', t: 'q:catalog' },
     groups: [
-      { title: 'Libros', links: [['Buscar en el catálogo', 'q:catalog'], ['Reseñas y recomendaciones', '#opiniones'], ['Novela y ficción', 'c:Novela y ficción'], ['Infantil y juvenil', 'c:Infantil y juvenil']] },
-      { title: 'Biblioteca digital', links: [['Explorar la biblioteca digital', '#investigacion'], ['Libros electrónicos, audiolibros y cómics', 'm:digital'], ['Búsqueda de empleo y carrera', '#servicios'], ['Aprendizaje de idiomas', '#eventos'], ['Índices y guías de investigación', 'm:guides'], ['Revistas y periódicos', 'm:digital'], ['Recursos multilingües', 'm:digital'], ['Cursos y aprendizaje en línea', '#eventos'], ['Música, películas y video en streaming', 'm:digital']] },
+      { title: 'Libros', links: [['Buscar en el catálogo', 'q:catalog'], ['Audiolibros: escuchar los libros', '#audiolibros'], ['Reseñas y recomendaciones', '#opiniones'], ['Novela y ficción', 'c:Novela y ficción'], ['Infantil y juvenil', 'c:Infantil y juvenil']] },
+      { title: 'Biblioteca digital', links: [['Explorar la biblioteca digital', '#investigacion'], ['Libros electrónicos y cómics', 'm:digital'], ['Búsqueda de empleo y carrera', '#servicios'], ['Aprendizaje de idiomas', '#eventos'], ['Índices y guías de investigación', 'm:guides'], ['Revistas y periódicos', 'm:digital'], ['Recursos multilingües', 'm:digital'], ['Cursos y aprendizaje en línea', '#eventos'], ['Música, películas y video en streaming', 'm:digital']] },
       { title: 'Más para pedir prestado', links: [['Computadoras y tecnología', 'm:computers'], ['Paquetes de libros para llevar', 'm:borrow'], ['Pases de parques estatales', 'm:borrow'], ['Pases a museos y centros culturales', 'm:borrow'], ['Kits de ciencia', 'c:Ciencia y tecnología'], ['Kits de juego', 'm:borrow'], ['Kits de observación de aves', 'm:borrow'], ['Pedir prestado un ukelele', 'm:borrow'], ['Biblioteca de fanzines', 'm:borrow']] },
     ],
   },
