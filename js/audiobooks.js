@@ -387,7 +387,7 @@
     const t = $('.abp__play', P);
     if (t) { t.setAttribute('aria-label', S.playing ? 'Pausar' : 'Escuchar'); t.firstElementChild.outerHTML = S.playing ? ICON.pause : ICON.play; }
     const tag = $('#ab-tag', P); if (tag) tag.textContent = S.playing ? 'Escuchando' : (S.started ? 'En pausa' : 'Listo para escuchar');
-    paintMini();
+    paintMini(); paintSession();
   }
   function paintProgress() {
     const r = $('#ab-range', P); if (!r) return;
@@ -481,10 +481,69 @@
   }
   function release() { try { if (S.wake) S.wake.release(); } catch (e) { /* nada */ } S.wake = null; }
 
+  /* ---------- segundo plano: pantalla apagada u otra app ----------
+     Un audio casi inaudible en bucle + la sesión multimedia hacen que el navegador trate la página como
+     "reproduciendo audio": no la congela, muestra los controles en la pantalla de bloqueo y deja la lectura
+     viva hasta que la pares tú (botón, notificación o temporizador). */
+  const MS = 'mediaSession' in navigator ? navigator.mediaSession : null;
+  let keep = null, keepOwn = false;
+  function quietWav() {
+    const n = 16000, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+    const tag = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    tag(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); tag(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, 8000, true); v.setUint32(28, 16000, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); tag(36, 'data'); v.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, ((i * 7919) % 5) - 2, true);   // ±2 de 32768: no se oye
+    return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+  }
+  function startKeep() {
+    try {
+      if (!keep) {
+        keep = new Audio(quietWav()); keep.loop = true; keep.setAttribute('playsinline', '');
+        // si el sistema lo interrumpe (llamada, otra app de audio), el estado del reproductor se sincroniza
+        keep.addEventListener('pause', () => { if (!keepOwn && S.playing && keep.paused) pause(); });
+      }
+      keepOwn = false;
+      const p = keep.play(); if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* sin audio de apoyo */ }
+  }
+  function stopKeep() { try { if (keep) { keepOwn = true; keep.pause(); } } catch (e) { /* nada */ } }
+  function paintSession() {
+    if (!MS || !S.book) return;
+    try {
+      MS.metadata = new MediaMetadata({
+        title: S.book.title, artist: S.book.author, album: 'BiblioHub · Audiolibros',
+        artwork: [{ src: new URL(S.book.cover, location.href).href, sizes: '300x420' }],
+      });
+      MS.playbackState = S.playing ? 'playing' : 'paused';
+    } catch (e) { /* nada */ }
+  }
+  if (MS) {
+    const on = (a, fn) => { try { MS.setActionHandler(a, fn); } catch (e) { /* acción no disponible */ } };
+    on('play', () => { if (!S.playing) play(); });
+    on('pause', () => { if (S.playing) pause(); });
+    on('stop', () => { if (S.playing) pause(); });
+    on('previoustrack', () => { if (S.book && S.book.ok) { S.started = true; goPage(S.page - 1); } });
+    on('nexttrack', () => { if (S.book && S.book.ok) { S.started = true; goPage(S.page + 1); } });
+    on('seekbackward', () => stepChunk(-1));
+    on('seekforward', () => stepChunk(1));
+  }
+  // vigilante: si el sistema corta la voz con la pantalla apagada, retoma justo donde iba
+  function watch(on) {
+    clearInterval(S.dog);
+    if (!on) return;
+    S.dog = setInterval(() => {
+      if (!S.playing || S.loading || !SUPPORTED) return;
+      if (speechSynthesis.paused) { speechSynthesis.resume(); return; }
+      if (!speechSynthesis.speaking && !speechSynthesis.pending && Date.now() - (S.lastAct || 0) > 4500) speak(S.ci);
+    }, 2500);
+  }
+
   function speak(ci) {
     const tk = ++S.token;
     clearTimeout(S.timeout);
-    speechSynthesis.cancel();
+    const busy = speechSynthesis.speaking || speechSynthesis.pending;
+    if (busy) speechSynthesis.cancel();
+    S.lastAct = Date.now();
     const ch = S.chunks[ci];
     if (!ch) { advancePage(true); return; }
     S.ci = ci; paintLyrics();
@@ -495,6 +554,7 @@
     let seen = false, t0 = 0;
     clearInterval(S.hl);
     u.onstart = () => {
+      S.lastAct = Date.now();
       t0 = performance.now(); clearInterval(S.hl);
       S.hl = setInterval(() => {
         if (seen || tk !== S.token) { clearInterval(S.hl); return; }
@@ -505,15 +565,18 @@
     u.onend = () => {
       clearInterval(S.hl);
       if (tk !== S.token) return;
-      saveProgress();
-      S.timeout = setTimeout(() => { if (tk === S.token && S.playing) { if (S.ci + 1 < S.chunks.length) speak(S.ci + 1); else advancePage(true); } }, reduce ? 60 : (ch.para ? 420 : 150));
+      saveProgress(); S.lastAct = Date.now();
+      const next = () => { if (tk === S.token && S.playing) { if (S.ci + 1 < S.chunks.length) speak(S.ci + 1); else advancePage(true); } };
+      // con la pantalla apagada los temporizadores se frenan: se encadena la frase siguiente sin esperar
+      if (document.hidden) next(); else S.timeout = setTimeout(next, reduce ? 60 : (ch.para ? 420 : 150));
     };
     u.onerror = (e) => {
       if (tk !== S.token || e.error === 'canceled' || e.error === 'interrupted') return;
       pause(); note('La voz no pudo reproducirse. Prueba con otra voz en el menú «Voz» o recarga la página.', true);
     };
     S.utter = u;                                           // se guarda para que el navegador no lo descarte a mitad de frase
-    setTimeout(() => { if (tk === S.token) speechSynthesis.speak(u); }, 40);
+    const go = () => { if (tk === S.token) speechSynthesis.speak(u); };
+    if (busy) setTimeout(go, 40); else go();                // tras cancelar, el navegador necesita un respiro
   }
 
   async function advancePage(auto) {
@@ -575,7 +638,7 @@
   async function play() {
     if (!SUPPORTED || !S.book || !S.book.ok) return;
     S.started = true;
-    S.playing = true; setPlayingUI(); keepAwake();
+    S.playing = true; setPlayingUI(); keepAwake(); startKeep(); paintSession(); watch(true);
     if (!S.chunks.length) {
       if (S.fresh) { S.fresh = false; await skipFrontMatter(); }
       const f = await loadPage(S.page);
@@ -588,7 +651,7 @@
   function pause() {
     S.token++; clearTimeout(S.timeout); clearInterval(S.hl);
     if (SUPPORTED) speechSynthesis.cancel();
-    S.playing = false; release(); saveProgress(); setPlayingUI(); paintGrid();
+    S.playing = false; release(); stopKeep(); watch(false); saveProgress(); setPlayingUI(); paintGrid();
   }
   const toggle = () => (S.playing ? pause() : play());
 
@@ -721,8 +784,14 @@
   // si se abre el lector de libros, la narración se detiene para no superponerse
   new MutationObserver(() => { if (document.documentElement.classList.contains('reader-open') && S.playing) pause(); updateMiniVisibility(); })
     .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.playing) keepAwake(); });
-  addEventListener('pagehide', () => { if (SUPPORTED) speechSynthesis.cancel(); });
+  // minimizar o apagar la pantalla NO detiene la lectura; al volver se confirma que sigue viva
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || !S.playing) return;
+    keepAwake();
+    if (SUPPORTED && !speechSynthesis.speaking && !speechSynthesis.pending && !S.loading) speak(S.ci);
+  });
+  // solo al cerrar la pestaña o salir del sitio se corta
+  addEventListener('pagehide', () => { stopKeep(); if (SUPPORTED) speechSynthesis.cancel(); });
 
   /* ---------- arranque ---------- */
   function init() {
